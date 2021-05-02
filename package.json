@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:favourite-themes.helloWorld"
+		"onCommand:favourite-themes.selectColourTheme"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "favourite-themes.helloWorld",
-				"title": "Hello World"
+				"command": "favourite-themes.selectColourTheme",
+				"title": "Pick Theme"
 			}
 		]
 	},
