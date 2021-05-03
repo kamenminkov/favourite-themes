@@ -10,6 +10,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"*",
 		"onCommand:favourite-themes.selectColourTheme"
 	],
 	"main": "./out/extension.js",

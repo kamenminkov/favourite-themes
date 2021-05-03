@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { getAllThemes, getCurrentColourTheme, setCurrentColourTheme } from ".";
 import { Theme } from "./model/package-json";
 
 // this method is called when your extension is activated
@@ -14,18 +15,32 @@ export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand(
 		"favourite-themes.selectColourTheme",
 		() => {
-			let allThemes: Theme[] = vscode.extensions.all
-				.filter(
-					(ext: vscode.Extension<any>) =>
-						ext.packageJSON.contributes &&
-						Object.keys(ext.packageJSON.contributes).includes("themes")
-				)
-				.flatMap(ext => ext.packageJSON.contributes.themes);
+			let allThemes: Theme[] = getAllThemes();
 
-			vscode.window.showQuickPick(
-				allThemes.map(theme => theme.label),
-				{ canPickMany: true }
-			);
+			let quickPickItems: vscode.QuickPickItem[] = allThemes.map(theme => ({
+				label: theme.label,
+				type: theme.uiTheme
+			}));
+
+			vscode.window
+				.showQuickPick(quickPickItems, {
+					canPickMany: true,
+					onDidSelectItem: (selectedTheme: { label: string }) => {
+						setCurrentColourTheme(selectedTheme.label)
+							.then(r => {
+								console.log(`Theme set to ${selectedTheme.label}`);
+								console.log(r);
+							})
+							.catch(e => {
+								console.error(e);
+							});
+					}
+				})
+				.then((onFulfilled: vscode.QuickPickItem[] | undefined) => {
+					if (onFulfilled) {
+						console.log(`selected themes:`, onFulfilled);
+					}
+				});
 		}
 	);
 

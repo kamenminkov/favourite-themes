@@ -40,13 +40,13 @@ interface Contributes {
 
 export interface Theme {
 	label: string;
-	uiTheme: UITheme;
+	uiTheme: ThemeType;
 	path: string;
 }
 
-export enum UITheme {
-	Vs = "vs",
-	VsDark = "vs-dark"
+export enum ThemeType {
+	light = "vs",
+	dark = "vs-dark"
 }
 
 interface Engines {
