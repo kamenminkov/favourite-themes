@@ -5,7 +5,7 @@ import {
 	storePinnedThemes,
 	uniq
 } from ".";
-import { Theme } from "./model/package-json";
+import { Theme, ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 
 // this method is called when your extension is activated
@@ -26,10 +26,24 @@ export function activate(context: vscode.ExtensionContext) {
 		"favourite-themes.selectColourTheme",
 		() => {
 			const allThemes: Theme[] = getAllThemes();
-			const quickPickItems: QuickPickTheme[] = allThemes.map(theme => ({
-				label: theme.label,
-				type: theme.uiTheme
-			}));
+			const quickPickItems: QuickPickTheme[] = allThemes
+				.map(theme => ({
+					label: theme.label,
+					type: theme.uiTheme
+				}))
+				.sort((a, b) => {
+					// TODO: Extract sorting function and make dark/light order configurable
+
+					if (a.type === b.type) {
+						return 0;
+					} else {
+						if (a.type === ThemeType.dark && b.type === ThemeType.light) {
+							return -1;
+						} else {
+							return 1;
+						}
+					}
+				});
 
 			vscode.window
 				.showQuickPick(quickPickItems, {
