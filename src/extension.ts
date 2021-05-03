@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import {
 	getAllThemes,
 	setCurrentColourTheme,
-	sortThemes,
+	sortThemesByPinnedStatus,
+	sortThemesByType,
 	storePinnedThemes,
 	uniq
 } from ".";
@@ -32,7 +33,8 @@ export function activate(context: vscode.ExtensionContext) {
 					label: theme.label,
 					type: theme.uiTheme
 				}))
-				.sort((a, b) => sortThemes(a, b, pinnedThemes));
+				.sort((a, b) => sortThemesByPinnedStatus(a, b, pinnedThemes))
+				.sort((a, b) => sortThemesByType(a, b));
 
 			vscode.window
 				.showQuickPick(quickPickItems, {

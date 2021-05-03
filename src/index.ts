@@ -36,10 +36,26 @@ export function uniq<T>(input: T[]): T[] {
 	return input.filter((elem, i, array) => array.indexOf(elem) === i);
 }
 
-export function sortThemes(
+export function sortThemesByPinnedStatus(
 	a: QuickPickTheme,
 	b: QuickPickTheme,
 	pinnedThemes?: string[]
+) {
+	if (pinnedThemes?.includes(a.label) && !pinnedThemes?.includes(b.label)) {
+		return -1;
+	} else if (
+		!pinnedThemes?.includes(a.label) &&
+		pinnedThemes?.includes(b.label)
+	) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+export function sortThemesByType(
+	a: QuickPickTheme,
+	b: QuickPickTheme
 ): 0 | 1 | -1 {
 	// TODO: Make dark/light order configurable
 
