@@ -2,10 +2,11 @@ import * as vscode from "vscode";
 import {
 	getAllThemes,
 	setCurrentColourTheme,
+	sortThemes,
 	storePinnedThemes,
 	uniq
 } from ".";
-import { Theme, ThemeType } from "./model/package-json";
+import { Theme } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 
 // this method is called when your extension is activated
@@ -31,19 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 					label: theme.label,
 					type: theme.uiTheme
 				}))
-				.sort((a, b) => {
-					// TODO: Extract sorting function and make dark/light order configurable
-
-					if (a.type === b.type) {
-						return 0;
-					} else {
-						if (a.type === ThemeType.dark && b.type === ThemeType.light) {
-							return -1;
-						} else {
-							return 1;
-						}
-					}
-				});
+				.sort((a, b) => sortThemes(a, b, pinnedThemes));
 
 			vscode.window
 				.showQuickPick(quickPickItems, {

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { Theme } from "./model/package-json";
+import { Theme, ThemeType } from "./model/package-json";
+import { QuickPickTheme } from "./model/quick-pick-theme";
 
 export function getAllThemes(): Theme[] {
 	return vscode.extensions.all
@@ -33,4 +34,22 @@ export async function storePinnedThemes(themes: string[]): Promise<void> {
 
 export function uniq<T>(input: T[]): T[] {
 	return input.filter((elem, i, array) => array.indexOf(elem) === i);
+}
+
+export function sortThemes(
+	a: QuickPickTheme,
+	b: QuickPickTheme,
+	pinnedThemes?: string[]
+): 0 | 1 | -1 {
+	// TODO: Make dark/light order configurable
+
+	if (a.type === b.type) {
+		return 0;
+	} else {
+		if (a.type === ThemeType.dark && b.type === ThemeType.light) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
 }
