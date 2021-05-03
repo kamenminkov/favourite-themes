@@ -20,6 +20,18 @@
 				"command": "favourite-themes.selectColourTheme",
 				"title": "Pick Theme"
 			}
+		],
+		"configuration": [
+			{
+				"title": "FavouriteThemes",
+				"properties": {
+					"favouriteThemes.pinnedThemes": {
+						"type": "array",
+						"default": [],
+						"description": "Themes added here will stay pinned at the top of the theme picker"
+					}
+				}
+			}
 		]
 	},
 	"scripts": {

@@ -20,3 +20,17 @@ export async function setCurrentColourTheme(theme: string): Promise<void> {
 		.getConfiguration()
 		.update("workbench.colorTheme", theme, vscode.ConfigurationTarget.Global);
 }
+
+export async function storePinnedThemes(themes: string[]): Promise<void> {
+	return await vscode.workspace
+		.getConfiguration()
+		.update(
+			"favouriteThemes.pinnedThemes",
+			themes,
+			vscode.ConfigurationTarget.Global
+		);
+}
+
+export function uniq<T>(input: T[]): T[] {
+	return input.filter((elem, i, array) => array.indexOf(elem) === i);
+}

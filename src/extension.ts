@@ -1,6 +1,12 @@
 import * as vscode from "vscode";
-import { getAllThemes, getCurrentColourTheme, setCurrentColourTheme } from ".";
+import {
+	getAllThemes,
+	setCurrentColourTheme,
+	storePinnedThemes,
+	uniq
+} from ".";
 import { Theme } from "./model/package-json";
+import { QuickPickTheme } from "./model/quick-pick-theme";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -9,15 +15,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	// console.log('Congratulations, your extension "favourite-themes" is now active!');
 
+	const pinnedThemes: string[] = vscode.workspace
+		.getConfiguration()
+		.get("favouriteThemes.pinnedThemes", []);
+
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand(
+	const disposable = vscode.commands.registerCommand(
 		"favourite-themes.selectColourTheme",
 		() => {
-			let allThemes: Theme[] = getAllThemes();
-
-			let quickPickItems: vscode.QuickPickItem[] = allThemes.map(theme => ({
+			const allThemes: Theme[] = getAllThemes();
+			const quickPickItems: QuickPickTheme[] = allThemes.map(theme => ({
 				label: theme.label,
 				type: theme.uiTheme
 			}));
@@ -36,9 +45,15 @@ export function activate(context: vscode.ExtensionContext) {
 							});
 					}
 				})
-				.then((onFulfilled: vscode.QuickPickItem[] | undefined) => {
+				.then((onFulfilled: QuickPickTheme[] | undefined) => {
 					if (onFulfilled) {
-						console.log(`selected themes:`, onFulfilled);
+						const newlyPinnedThemes = onFulfilled.map(theme => theme.label);
+						const pinnedThemesToStore: string[] = uniq([
+							...pinnedThemes,
+							...newlyPinnedThemes
+						]).sort();
+
+						storePinnedThemes(pinnedThemesToStore);
 					}
 				});
 		}
