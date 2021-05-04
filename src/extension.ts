@@ -28,16 +28,20 @@ export function activate(context: vscode.ExtensionContext) {
 		"favourite-themes.selectColourTheme",
 		() => {
 			const allThemes: Theme[] = getAllThemes();
-			const quickPickItems: QuickPickTheme[] = allThemes
-				.map(theme => ({
-					label: theme.label,
-					type: theme.uiTheme
-				}))
+			const quickPickThemes: QuickPickTheme[] = allThemes
+				.map(
+					theme =>
+						({
+							label: theme.label,
+							type: theme.uiTheme,
+							picked: pinnedThemes.includes(theme.label)
+						} as QuickPickTheme)
+				)
 				.sort((a, b) => sortThemesByPinnedStatus(a, b, pinnedThemes))
 				.sort((a, b) => sortThemesByType(a, b));
 
 			vscode.window
-				.showQuickPick(quickPickItems, {
+				.showQuickPick(quickPickThemes, {
 					canPickMany: true,
 					onDidSelectItem: (selectedTheme: { label: string }) => {
 						setCurrentColourTheme(selectedTheme.label)
