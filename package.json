@@ -31,6 +31,15 @@
 						"description": "Themes added here will stay pinned at the top of the theme picker"
 					}
 				}
+			},
+			{
+				"title": "FavouriteThemes",
+				"properties": {
+					"favouriteThemes.darkThemesFirst": {
+						"type": "boolean",
+						"default": true
+					}
+				}
 			}
 		]
 	},

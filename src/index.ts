@@ -55,17 +55,16 @@ export function sortThemesByPinnedStatus(
 
 export function sortThemesByType(
 	a: QuickPickTheme,
-	b: QuickPickTheme
+	b: QuickPickTheme,
+	darkThemesFirst: boolean = true
 ): 0 | 1 | -1 {
-	// TODO: Make dark/light order configurable
-
 	if (a.type === b.type) {
 		return 0;
 	} else {
 		if (a.type === ThemeType.dark && b.type === ThemeType.light) {
-			return -1;
+			return darkThemesFirst ? -1 : 1;
 		} else {
-			return 1;
+			return darkThemesFirst ? 1 : -1;
 		}
 	}
 }
