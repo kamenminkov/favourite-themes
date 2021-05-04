@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import {
 	getAllThemes,
 	setCurrentColourTheme,
-	sortThemesByPinnedStatus,
 	sortThemesByType,
 	storePinnedThemes,
 	uniq
@@ -15,21 +14,34 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand(
 		"favourite-themes.selectColourTheme",
 		() => {
-			const pinnedThemes: string[] = settings.getPinnedThemes();
-			const showDarkThemesFirst: boolean = settings.getShowDarkThemesFirst();
-
+			const darkThemesFirst: boolean = settings.getShowDarkThemesFirst();
+			const previouslyPinnedThemes: string[] = settings.getPinnedThemes();
 			const allThemes: Theme[] = getAllThemes();
-			const quickPickThemes: QuickPickTheme[] = allThemes
-				.map(
-					theme =>
-						({
-							label: theme.label,
-							type: theme.uiTheme,
-							picked: pinnedThemes.includes(theme.label)
-						} as QuickPickTheme)
-				)
-				.sort((a, b) => sortThemesByType(a, b, showDarkThemesFirst))
-				.sort((a, b) => sortThemesByPinnedStatus(a, b, pinnedThemes));
+
+			const pinnedThemes: QuickPickTheme[] = allThemes
+				.filter(t => previouslyPinnedThemes.includes(t.label))
+				.map(theme => ({
+					label: theme.label,
+					type: theme.uiTheme,
+					picked: true
+				}));
+
+			const nonPinnedThemes: QuickPickTheme[] = allThemes
+				.filter(t => !previouslyPinnedThemes.includes(t.label))
+				.map(theme => ({
+					label: theme.label,
+					type: theme.uiTheme,
+					picked: false
+				}));
+
+			const quickPickThemes: QuickPickTheme[] = [
+				pinnedThemes,
+				nonPinnedThemes
+			].flatMap(themeSet =>
+				themeSet.sort((a, b) => sortThemesByType(a, b, darkThemesFirst))
+			);
+
+			// TODO: Add customizable display besides just theme label
 
 			vscode.window
 				.showQuickPick(quickPickThemes, {
@@ -47,9 +59,11 @@ export function activate(context: vscode.ExtensionContext) {
 				})
 				.then((onFulfilled: QuickPickTheme[] | undefined) => {
 					if (onFulfilled) {
+						// TODO: Fix unpinning of themes
+
 						const newlyPinnedThemes = onFulfilled.map(theme => theme.label);
 						const pinnedThemesToStore: string[] = uniq([
-							...pinnedThemes,
+							...previouslyPinnedThemes,
 							...newlyPinnedThemes
 						]).sort();
 
