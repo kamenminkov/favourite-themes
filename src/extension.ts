@@ -59,13 +59,9 @@ export function activate(context: vscode.ExtensionContext) {
 				})
 				.then((onFulfilled: QuickPickTheme[] | undefined) => {
 					if (onFulfilled) {
-						// TODO: Fix unpinning of themes
-
-						const newlyPinnedThemes = onFulfilled.map(theme => theme.label);
-						const pinnedThemesToStore: string[] = uniq([
-							...previouslyPinnedThemes,
-							...newlyPinnedThemes
-						]).sort();
+						const pinnedThemesToStore: string[] = onFulfilled
+							.map(theme => theme.label)
+							.sort();
 
 						storePinnedThemes(pinnedThemesToStore);
 					}
