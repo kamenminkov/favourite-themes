@@ -1,8 +1,16 @@
 {
 	"name": "favourite-themes",
-	"displayName": "favourite-themes",
+	"author": {
+		"name": "Kamen Minkov",
+		"url": "https://github.com/kamenminkov"
+	},
+	"publisher": "kminkov",
+	"repository": {
+		"url": "https://github.com/kamenminkov/favourite-themes"
+	},
+	"displayName": "Favourite Themes",
 	"description": "",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},

@@ -1,71 +1,43 @@
-# favourite-themes README
+# Favourite Themes README
 
-This is the README for your extension "favourite-themes". After writing up a brief description, we recommend including the following sections.
+This extension's main goal is to facilitate switching and keeping track of preferred colour themes, especially in the case of theme packs containing tens of individual themes.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+The extension's main feature is a quick pick menu showing all installed colour themes with the ability to show preferred ones at the top.
 
-For example if there is an image subfolder under your extension project workspace:
+Open the command palette and search for "Pick Theme" to show the picker (or alternatively assign a keyboard shortcut for the `favourite-themes.selectColourTheme` command to do the same thing). The moment you check a theme in the picker (using `Space`), it's stored in your settings, and any subsequent invocations of the menu will show checked themes on top of the list.
 
-\!\[feature X\]\(images/feature-x.png\)
+![Favourite Themes](images/favourite-themes.gif)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+(Yes, before you ask, there is a theme called [`undefined`](https://marketplace.visualstudio.com/items?itemName=christianhg.undefined).)
 
-## Requirements
+<!-- ## Requirements -->
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Motivation
+
+VSCode's built-in theme picker works perfectly if you have 5 or 10 themes installed. However, if you install a theme pack or two, you can easily end up with 100 themes of which you only like 10.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+| Setting                            | Description                                                | Default |
+| ---------------------------------- | :--------------------------------------------------------- | ------: |
+| `favouriteThemes.pinnedThemes`     | A string array containing all pinned themes.               |    `[]` |
+| `favouriteThemes.darkThemesFirst`: | A `boolean` denoting whether dark themes should come first |  `true` |
 
-## Known Issues
+<!-- ## Known Issues -->
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## TODO
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+- Add extension icon
+- List themes in recent activation order
 
 ---
 
-## Following extension guidelines
+## Release Notes
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+### 1.0.0
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release
