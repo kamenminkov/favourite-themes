@@ -3,8 +3,7 @@ import {
 	getAllThemes,
 	setCurrentColourTheme,
 	sortThemesByType,
-	storePinnedThemes,
-	uniq
+	storePinnedThemes
 } from ".";
 import { Theme } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
@@ -59,6 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
 				})
 				.then((onFulfilled: QuickPickTheme[] | undefined) => {
 					if (onFulfilled) {
+						// TODO: Add sorting by recent usage
+
 						const pinnedThemesToStore: string[] = onFulfilled
 							.map(theme => theme.label)
 							.sort();
