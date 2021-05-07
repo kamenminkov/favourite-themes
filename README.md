@@ -38,11 +38,4 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-
-### 1.1.0
-
-Add sorting of pinned themes by recent usage
-
-### 1.0.0
-
-Initial release
+See [CHANGELOG.md](./CHANGELOG.md)

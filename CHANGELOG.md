@@ -1,9 +1,11 @@
 # Change Log
 
-All notable changes to the "favourite-themes" extension will be documented in this file.
+## 1.1.0
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Added
 
-## [Unreleased]
+- Sorting of pinned themes by recent usage
 
-- Initial release
+## 1.0.0
+
+Initial release
