@@ -32,11 +32,15 @@ This extension contributes the following settings:
 ## TODO
 
 - Add extension icon
-- List themes in recent activation order
 
 ---
 
 ## Release Notes
+
+
+### 1.1.0
+
+Add sorting of pinned themes by recent usage
 
 ### 1.0.0
 
