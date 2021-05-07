@@ -2,18 +2,19 @@ import * as vscode from "vscode";
 import { Theme, ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 
-export function getAllThemes(): Theme[] {
-	return vscode.extensions.all
+export function getAllThemes(): Map<string, Theme> {
+	const allThemes = new Map<string, Theme>();
+
+	vscode.extensions.all
 		.filter(
-			(ext: vscode.Extension<any>) =>
+			ext =>
 				ext.packageJSON.contributes &&
 				Object.keys(ext.packageJSON.contributes).includes("themes")
 		)
-		.flatMap(ext => ext.packageJSON.contributes.themes);
-}
+		.flatMap(ext => ext.packageJSON.contributes.themes as Theme[])
+		.map(theme => allThemes.set(theme.label, theme));
 
-export function getCurrentColourTheme(): string | undefined {
-	return vscode.workspace.getConfiguration().get("workbench.colorTheme");
+	return allThemes;
 }
 
 export async function setCurrentColourTheme(theme: string): Promise<void> {
