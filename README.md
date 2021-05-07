@@ -22,10 +22,11 @@ VSCode's built-in theme picker works perfectly if you have 5 or 10 themes instal
 
 This extension contributes the following settings:
 
-| Setting                            | Description                                                | Default |
-| ---------------------------------- | :--------------------------------------------------------- | ------: |
-| `favouriteThemes.pinnedThemes`     | A string array containing all pinned themes.               |    `[]` |
-| `favouriteThemes.darkThemesFirst`: | A `boolean` denoting whether dark themes should come first |  `true` |
+| Setting                                   | Description                                                                                               | Default |
+| ----------------------------------------- | :-------------------------------------------------------------------------------------------------------- | ------: |
+| `favouriteThemes.pinnedThemes`            | A string array containing all pinned themes.                                                              |    `[]` |
+| `favouriteThemes.darkThemesFirst`:        | A `boolean` denoting whether dark themes should come first                                                |  `true` |
+| `favouriteThemes.sortPinnedByRecentUsage` | A `boolean` denoting whether to show themes in order of their usage (i.e. most recently used ones on top) | `false` |
 
 <!-- ## Known Issues -->
 
