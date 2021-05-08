@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
-import { sortThemesByType } from "./util";
+import { getThemeTypeLabel, sortThemesByType } from "./util/index";
 import { SettingsManager } from "./util/settings-manager";
 
 const settings = new SettingsManager();
@@ -15,11 +15,18 @@ export function activate(context: vscode.ExtensionContext) {
 		"favourite-themes.selectColourTheme",
 		() => {
 			let pinnedThemes: QuickPickTheme[] = settings.previouslyPinnedThemes.map(
-				theme => ({
-					label: theme,
-					type: settings.allThemes.get(theme)?.uiTheme as ThemeType,
-					picked: true
-				})
+				theme => {
+					const themeType = settings.allThemes.get(theme)?.uiTheme as ThemeType;
+
+					return {
+						label: theme,
+						type: themeType,
+						picked: true,
+						description: settings.showDetailsInPicker
+							? getThemeTypeLabel(themeType)
+							: undefined
+					};
+				}
 			);
 
 			if (!settings.sortPinnedByRecentUsage) {
@@ -32,11 +39,17 @@ export function activate(context: vscode.ExtensionContext) {
 				settings.allThemes.values()
 			)
 				.filter(t => !settings.previouslyPinnedThemes.includes(t.label))
-				.map(theme => ({
-					label: theme.label,
-					type: theme.uiTheme,
-					picked: false
-				}))
+				.map(
+					theme =>
+						({
+							label: theme.label,
+							type: theme.uiTheme,
+							picked: false,
+							description: settings.showDetailsInPicker
+								? getThemeTypeLabel(theme.uiTheme)
+								: undefined
+						} as QuickPickTheme)
+				)
 				.sort((a, b) => sortThemesByType(a, b, settings.sortDarkThemesFirst));
 
 			const quickPickThemes = [...pinnedThemes, ...nonPinnedThemes];
@@ -44,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window
 				.showQuickPick(quickPickThemes, {
 					canPickMany: true,
+					matchOnDescription: true,
 					onDidSelectItem: (selectedTheme: { label: string }) => {
 						SettingsManager.setCurrentColourTheme(selectedTheme.label)
 							.then(r => {

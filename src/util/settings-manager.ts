@@ -6,6 +6,7 @@ export class SettingsManager {
 	public sortPinnedByRecentUsage: boolean = false;
 	public previouslyPinnedThemes: string[] = [];
 	public allThemes: Map<string, Theme> = new Map();
+	public showDetailsInPicker: boolean = false;
 
 	constructor() {
 		this.updateSettings();
@@ -16,6 +17,7 @@ export class SettingsManager {
 		this.sortPinnedByRecentUsage = SettingsManager.getSortPinnedByRecentUsage();
 		this.previouslyPinnedThemes = SettingsManager.getPinnedThemes();
 		this.allThemes = SettingsManager.getAllThemes();
+		this.showDetailsInPicker = SettingsManager.getShowDetailsInPicker();
 	}
 
 	public static getCurrentColourTheme(): string | undefined {
@@ -51,6 +53,12 @@ export class SettingsManager {
 			.map(theme => allThemes.set(theme.label, theme));
 
 		return allThemes;
+	}
+
+	private static getShowDetailsInPicker(): boolean {
+		return workspace
+			.getConfiguration()
+			.get("favouriteThemes.showExtraQuickPickDetails", false);
 	}
 
 	public static async setCurrentColourTheme(theme: string): Promise<void> {
