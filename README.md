@@ -32,6 +32,8 @@ This extension contributes the following settings:
 
 ## TODO
 
+- Highlight active theme when showing the picker
+- Add customizable display (i.e. how to show names in the picker)
 - Add extension icon
 
 ---
