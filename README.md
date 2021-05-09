@@ -22,17 +22,18 @@ VSCode's built-in theme picker works perfectly if you have 5 or 10 themes instal
 
 This extension contributes the following settings:
 
-| Setting                                     | Description                                                                                               | Default |
-| ------------------------------------------- | :-------------------------------------------------------------------------------------------------------- | ------: |
-| `favouriteThemes.pinnedThemes`              | A string array containing all pinned themes.                                                              |    `[]` |
-| `favouriteThemes.darkThemesFirst`:          | A `boolean` denoting whether dark themes should come first                                                |  `true` |
-| `favouriteThemes.sortPinnedByRecentUsage`   | A `boolean` denoting whether to show themes in order of their usage (i.e. most recently used ones on top) | `false` |
-| `favouriteThemes.showExtraQuickPickDetails` | A `boolean` denoting whether to show dark/light theme type inline in the picker                           | `false` |
+| Setting                                     |    Type    | Description                                                                          | Default value |
+| ------------------------------------------- | :--------: | :----------------------------------------------------------------------------------- | ------------: |
+| `favouriteThemes.pinnedThemes`              | `string[]` | An array containing all pinned themes.                                               |          `[]` |
+| `favouriteThemes.darkThemesFirst`           | `boolean`  | Whether dark themes should come first                                                |        `true` |
+| `favouriteThemes.sortPinnedByRecentUsage`   | `boolean`  | Whether to show themes in order of their usage (i.e. most recently used ones on top) |       `false` |
+| `favouriteThemes.showExtraQuickPickDetails` | `boolean`  | Whether to show dark/light theme type inline in the picker                           |       `false` |
 
 <!-- ## Known Issues -->
 
 ## TODO
 
+- Have typing while the picker's open automatically focus the search field instead of having to navigate to it
 - Highlight active theme when showing the picker
 - Add customizable display (i.e. how to show names in the picker)
 - Add extension icon

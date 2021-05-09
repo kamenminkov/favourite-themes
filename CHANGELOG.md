@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.2.2
+
+### Added
+
+- Dismissing the picker will get you back to the previous theme
+
 ## 1.2.1
 
 Clean up

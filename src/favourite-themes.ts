@@ -52,6 +52,8 @@ export function showThemeQuickPick(
 	quickPickThemes: QuickPickTheme[],
 	settings: SettingsManager
 ): Thenable<void> {
+	const previousTheme = SettingsManager.getCurrentColourTheme() as string;
+
 	return window
 		.showQuickPick(quickPickThemes, {
 			canPickMany: true,
@@ -84,7 +86,9 @@ export function showThemeQuickPick(
 						  ]
 						: onFulfilled.map(theme => theme.label).sort();
 
-				SettingsManager.storePinnedThemes(pinnedThemesToStore);
+				return SettingsManager.storePinnedThemes(pinnedThemesToStore);
+			} else {
+				return SettingsManager.setCurrentColourTheme(previousTheme);
 			}
 		});
 }
