@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.1
+
+Clean up
+
 ## 1.2.0
 
 Add optional details in the picker - showing dark/light theme (`favouriteThemes.showExtraQuickPickDetails`)
