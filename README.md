@@ -33,6 +33,8 @@ This extension contributes the following settings:
 
 ## TODO
 
+- Track and show statistics of how much you use each theme
+- ~~Handle disabling/uninstalling of themes~~
 - Have typing while the picker's open automatically focus the search field instead of having to navigate to it
 - Highlight active theme when showing the picker
 - Add customizable display (i.e. how to show names in the picker)

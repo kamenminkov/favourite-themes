@@ -18,6 +18,8 @@ export class SettingsManager {
 		this.previouslyPinnedThemes = SettingsManager.getPinnedThemes();
 		this.allThemes = SettingsManager.getAllThemes();
 		this.showDetailsInPicker = SettingsManager.getShowDetailsInPicker();
+
+		SettingsManager.removeMissingThemes();
 	}
 
 	public static getCurrentColourTheme(): string | undefined {
@@ -26,6 +28,26 @@ export class SettingsManager {
 
 	public static getPinnedThemes(): string[] {
 		return workspace.getConfiguration().get("favouriteThemes.pinnedThemes", []);
+	}
+
+	public static removeMissingThemes(): typeof SettingsManager {
+		const allThemes = this.getAllThemes();
+		const pinnedThemes = this.getPinnedThemes().filter(t => allThemes.has(t));
+
+		this.storePinnedThemes(pinnedThemes);
+
+		const lastChosenTheme = this.getCurrentColourTheme();
+
+		if (lastChosenTheme && !this.themeExists(lastChosenTheme)) {
+			const firstFavouriteTheme = this.getPinnedThemes()[0];
+			this.setCurrentColourTheme(firstFavouriteTheme);
+		}
+
+		return this;
+	}
+
+	public static themeExists(theme: string): boolean {
+		return this.getAllThemes().has(theme);
 	}
 
 	public static getShowDarkThemesFirst(): boolean {

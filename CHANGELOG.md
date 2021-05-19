@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.3.0
+
+### Added
+
+- Automatically removing missing themes from the pinned list (when uninstalling or disabling a theme)
+
 ## 1.2.2
 
 ### Added

@@ -1,3 +1,4 @@
+import type { ConfigurationChangeEvent } from "vscode";
 import { ThemeType } from "../model/package-json";
 import { QuickPickTheme } from "../model/quick-pick-theme";
 
@@ -23,4 +24,11 @@ export function sortThemesByType(
 
 export function getThemeTypeLabel(themeType: ThemeType): "Dark" | "Light" {
 	return themeType === ThemeType.dark ? "Dark" : "Light";
+}
+
+export function affectsRelevantConfig(e: ConfigurationChangeEvent): boolean {
+	return (
+		e.affectsConfiguration("favouriteThemes") ||
+		e.affectsConfiguration("workbench.colorTheme")
+	);
 }
