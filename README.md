@@ -12,6 +12,8 @@ Open the command palette and search for "Pick Theme" to show the picker (or alte
 
 (Yes, before you ask, there is a theme called [`undefined`](https://marketplace.visualstudio.com/items?itemName=christianhg.undefined).)
 
+Font used is [Input Mono Narrow](https://input.djr.com).
+
 <!-- ## Requirements -->
 
 ## Motivation
@@ -28,12 +30,13 @@ This extension contributes the following settings:
 | `favouriteThemes.darkThemesFirst`           | `boolean`  | Whether dark themes should come first                                                |        `true` |
 | `favouriteThemes.sortPinnedByRecentUsage`   | `boolean`  | Whether to show themes in order of their usage (i.e. most recently used ones on top) |       `false` |
 | `favouriteThemes.showExtraQuickPickDetails` | `boolean`  | Whether to show dark/light theme type inline in the picker                           |       `false` |
+| `favourite-themes.trackThemeUsage`          | `boolean`  | Whether to track usage times of each theme                                           |       `false` |
 
 <!-- ## Known Issues -->
 
 ## TODO
 
-- Track and show statistics of how much you use each theme
+- ~~Track and show statistics of how much you use each theme~~
 - ~~Handle disabling/uninstalling of themes~~
 - Have typing while the picker's open automatically focus the search field instead of having to navigate to it
 - Highlight active theme when showing the picker

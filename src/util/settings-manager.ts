@@ -22,7 +22,7 @@ export class SettingsManager {
 		SettingsManager.removeMissingThemes();
 	}
 
-	public static getCurrentColourTheme(): string | undefined {
+	public static getCurrentTheme(): string | undefined {
 		return workspace.getConfiguration().get("workbench.colorTheme");
 	}
 
@@ -36,7 +36,7 @@ export class SettingsManager {
 
 		this.storePinnedThemes(pinnedThemes);
 
-		const lastChosenTheme = this.getCurrentColourTheme();
+		const lastChosenTheme = this.getCurrentTheme();
 
 		if (lastChosenTheme && !this.themeExists(lastChosenTheme)) {
 			const firstFavouriteTheme = this.getPinnedThemes()[0];

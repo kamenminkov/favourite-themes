@@ -3,6 +3,7 @@ import { ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 import { getThemeTypeLabel, sortThemesByType } from "./util/index";
 import { SettingsManager } from "./util/settings-manager";
+import { ThemeUsageTracker } from "./util/theme-usage-tracker";
 
 export async function prepareQuickPickThemeList(
 	settings: SettingsManager
@@ -52,7 +53,7 @@ export function showThemeQuickPick(
 	quickPickThemes: QuickPickTheme[],
 	settings: SettingsManager
 ): Thenable<void> {
-	const previousTheme = SettingsManager.getCurrentColourTheme() as string;
+	const previousTheme = SettingsManager.getCurrentTheme() as string;
 
 	return window
 		.showQuickPick(quickPickThemes, {
@@ -71,7 +72,7 @@ export function showThemeQuickPick(
 		})
 		.then(onFulfilled => {
 			if (onFulfilled) {
-				const currentTheme = SettingsManager.getCurrentColourTheme();
+				const currentTheme = SettingsManager.getCurrentTheme();
 				const currentThemeIsPinned = onFulfilled.some(
 					theme => theme.label === currentTheme
 				);
@@ -91,4 +92,10 @@ export function showThemeQuickPick(
 				return SettingsManager.setCurrentColourTheme(previousTheme);
 			}
 		});
+}
+
+export function showUsageReport(themeTracker: ThemeUsageTracker): void {
+	window.showInformationMessage("Generating report...");
+
+	let report = themeTracker.generateReport();
 }
