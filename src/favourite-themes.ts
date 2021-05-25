@@ -1,7 +1,8 @@
-import { window } from "vscode";
+import { window, workspace } from "vscode";
 import { ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 import { getThemeTypeLabel, sortThemesByType } from "./util/index";
+import { generateUsageTable } from "./util/markdown";
 import { SettingsManager } from "./util/settings-manager";
 import { ThemeUsageTracker } from "./util/theme-usage-tracker";
 
@@ -94,8 +95,17 @@ export function showThemeQuickPick(
 		});
 }
 
-export function showUsageReport(themeTracker: ThemeUsageTracker): void {
+export async function showUsageReport(
+	themeTracker: ThemeUsageTracker
+): Promise<void> {
 	window.showInformationMessage("Generating report...");
 
 	let report = themeTracker.generateReport();
+
+	let markdownUsageTable = generateUsageTable(report);
+
+	let document = await workspace.openTextDocument({
+		language: "markdown",
+		content: markdownUsageTable
+	});
 }

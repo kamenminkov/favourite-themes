@@ -21,17 +21,17 @@ export class ThemeUsageTracker {
 				themeUsed: this.lastUsedTheme as string
 			});
 
-			const lastTick = this.ticks[this.ticks.length - 1];
+			// const lastTick = this.ticks[this.ticks.length - 1];
+			// const lastDuration: number = lastTick.end - lastTick.start;
 
-			const lastDuration: number = lastTick.end - lastTick.start;
-
-			console.log(`===== ~ ThemeUsageTracker ~ lastDuration`, lastDuration);
+			// console.log(`===== ~ ThemeUsageTracker ~ lastDuration`, lastDuration);
 		}
 
 		return this;
 	}
 
 	public generateReport(): Map<string, number> {
+		// TODO: Try using a named tuple instead of a map
 		let usages: Map<string, number> = new Map<string, number>();
 
 		for (const tick of this.ticks) {
