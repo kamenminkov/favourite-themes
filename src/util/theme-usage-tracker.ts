@@ -1,4 +1,5 @@
 import { TimePeriod } from "./time-period";
+import { UsageRecord } from "./usage-record";
 
 export class ThemeUsageTracker {
 	private ticks: TimePeriod[] = [];
@@ -15,11 +16,13 @@ export class ThemeUsageTracker {
 		} else {
 			this.lastUsedTheme = currentTheme;
 
-			this.ticks.push({
-				start: this.lastStartTime,
-				end: Date.now(),
-				themeUsed: this.lastUsedTheme as string
-			});
+			this.ticks.push(
+				new TimePeriod(
+					this.lastStartTime,
+					Date.now(),
+					this.lastUsedTheme as string
+				)
+			);
 
 			// const lastTick = this.ticks[this.ticks.length - 1];
 			// const lastDuration: number = lastTick.end - lastTick.start;
@@ -30,18 +33,22 @@ export class ThemeUsageTracker {
 		return this;
 	}
 
-	public generateReport(): Map<string, number> {
-		// TODO: Try using a named tuple instead of a map
-		let usages: Map<string, number> = new Map<string, number>();
+	public generateReport(): Map<string, UsageRecord> {
+		const usages: Map<string, UsageRecord> = new Map<string, UsageRecord>();
 
 		for (const tick of this.ticks) {
-			let currentTickDuration = tick.end - tick.start;
-
 			if (usages.has(tick.themeUsed)) {
-				let previousTotalUsage = usages.get(tick.themeUsed) as number;
-				usages.set(tick.themeUsed, previousTotalUsage + currentTickDuration);
+				const previousTotalUsage = usages.get(tick.themeUsed)?.time as number;
+
+				usages.set(tick.themeUsed, {
+					theme: tick.themeUsed,
+					time: previousTotalUsage + tick.duration
+				});
 			} else {
-				usages.set(tick.themeUsed, currentTickDuration);
+				usages.set(tick.themeUsed, {
+					theme: tick.themeUsed,
+					time: tick.duration
+				});
 			}
 		}
 
