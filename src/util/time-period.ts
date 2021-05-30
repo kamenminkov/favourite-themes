@@ -1,11 +1,17 @@
 export class TimePeriod {
 	constructor(
-		public start: number,
-		public end: number,
-		public themeUsed: string
+		private params: {
+			start: number;
+			end: number;
+			themeUsed: string;
+		}
 	) {}
 
 	public get duration(): number {
-		return this.end - this.start;
+		return this.params.end - this.params.start;
+	}
+
+	public get theme(): string {
+		return this.params.themeUsed;
 	}
 }

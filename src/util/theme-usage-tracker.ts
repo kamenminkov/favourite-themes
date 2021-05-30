@@ -17,11 +17,11 @@ export class ThemeUsageTracker {
 			this.lastUsedTheme = currentTheme;
 
 			this.ticks.push(
-				new TimePeriod(
-					this.lastStartTime,
-					Date.now(),
-					this.lastUsedTheme as string
-				)
+				new TimePeriod({
+					start: this.lastStartTime,
+					end: Date.now(),
+					themeUsed: this.lastUsedTheme as string
+				})
 			);
 
 			// const lastTick = this.ticks[this.ticks.length - 1];
@@ -37,19 +37,13 @@ export class ThemeUsageTracker {
 		const usages: Map<string, UsageRecord> = new Map<string, UsageRecord>();
 
 		for (const tick of this.ticks) {
-			if (usages.has(tick.themeUsed)) {
-				const previousTotalUsage = usages.get(tick.themeUsed)?.time as number;
+			const theme = tick.theme;
+			const previousUsage = usages.get(theme)?.time as number;
+			const duration = usages.has(theme)
+				? previousUsage + tick.duration
+				: tick.duration;
 
-				usages.set(tick.themeUsed, {
-					theme: tick.themeUsed,
-					time: previousTotalUsage + tick.duration
-				});
-			} else {
-				usages.set(tick.themeUsed, {
-					theme: tick.themeUsed,
-					time: tick.duration
-				});
-			}
+			usages.set(theme, { theme: theme, time: duration });
 		}
 
 		return usages;
