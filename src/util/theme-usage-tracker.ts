@@ -7,28 +7,57 @@ export class ThemeUsageTracker {
 	private lastUsedTheme: string | undefined;
 	private lastStartTime: number = 0;
 
+	private isTracking: boolean = false;
+
 	public update(
 		currentTheme: string | undefined,
 		shouldTrack: boolean = true
 	): ThemeUsageTracker {
-		if (shouldTrack) {
-			this.lastStartTime = Date.now();
-		} else {
-			this.lastUsedTheme = currentTheme;
+		if (this.isTracking) {
+			if (shouldTrack) {
+				// this.tracking = true; // implied
 
-			this.ticks.push(
-				new TimePeriod({
-					start: this.lastStartTime,
-					end: Date.now(),
-					themeUsed: this.lastUsedTheme as string
-				})
-			);
+				if (this.lastUsedTheme !== currentTheme) {
+					this.lastUsedTheme = currentTheme;
+				}
+			} else {
+				this.newTick(
+					this.lastStartTime,
+					Date.now(),
+					this.lastUsedTheme as string
+				);
+			}
+		} else {
+			if (shouldTrack) {
+				this.isTracking = true;
+
+				this.lastUsedTheme = currentTheme;
+				this.lastStartTime = Date.now();
+			} else {
+				// this.tracking = false; // implied
+
+				this.lastUsedTheme = currentTheme;
+
+				// Probably shouldn't track here.
+
+				this.newTick(
+					this.lastStartTime,
+					Date.now(),
+					this.lastUsedTheme as string
+				);
+			}
 
 			// const lastTick = this.ticks[this.ticks.length - 1];
 			// const lastDuration: number = lastTick.end - lastTick.start;
 
 			// console.log(`===== ~ ThemeUsageTracker ~ lastDuration`, lastDuration);
 		}
+
+		return this;
+	}
+
+	private newTick(start: number, end: number, themeUsed: string): this {
+		this.ticks.push(new TimePeriod({ start, end, themeUsed }));
 
 		return this;
 	}

@@ -22,8 +22,13 @@ const themeTracker = new ThemeUsageTracker().update(
 );
 
 export function activate(context: ExtensionContext) {
-	window.onDidChangeWindowState(e => onChangedTheme(e.focused));
-	window.onDidChangeActiveColorTheme(e => onChangedTheme(window.state.focused));
+	window.onDidChangeWindowState(e => {
+		console.log(`===== ~ activate ~ e.focused`, e.focused);
+		return onChangedTheme(e.focused);
+	});
+	window.onDidChangeActiveColorTheme(() => {
+		return onChangedTheme(window.state.focused);
+	});
 
 	workspace.onDidChangeConfiguration((e: ConfigurationChangeEvent) => {
 		if (affectsRelevantConfig(e)) {
