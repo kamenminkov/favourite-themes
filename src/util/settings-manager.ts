@@ -72,7 +72,7 @@ export class SettingsManager {
 					Object.keys(ext.packageJSON.contributes).includes("themes")
 			)
 			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[])
-			.map(theme => allThemes.set(theme.label, theme));
+			.map(theme => allThemes.set(theme.id || theme.label, theme));
 
 		return allThemes;
 	}

@@ -21,7 +21,9 @@ export function activate(context: ExtensionContext) {
 		}
 	});
 
-	extensions.onDidChange(e => settings.updateSettings());
+	extensions.onDidChange(e => {
+		return settings.updateSettings();
+	});
 
 	const disposable = commands.registerCommand(
 		"favourite-themes.selectColourTheme",

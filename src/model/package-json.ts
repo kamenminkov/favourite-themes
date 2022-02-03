@@ -39,6 +39,7 @@ interface Contributes {
 }
 
 export interface Theme {
+	id: string;
 	label: string;
 	uiTheme: ThemeType;
 	path: string;
