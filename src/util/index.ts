@@ -22,7 +22,7 @@ export function sortThemesByType(
 	}
 }
 
-export function getThemeTypeLabel(themeType: ThemeType): "Dark" | "Light" {
+export function getThemeTypeLabel(themeType?: ThemeType): "Dark" | "Light" {
 	return themeType === ThemeType.dark ? "Dark" : "Light";
 }
 

@@ -3,10 +3,13 @@ import { Theme } from "../model/package-json";
 
 export class SettingsManager {
 	public sortDarkThemesFirst: boolean = false;
+	public sortCurrentThemeTypeFirst: boolean = false;
+
 	public sortPinnedByRecentUsage: boolean = false;
 	public previouslyPinnedThemes: string[] = [];
-	public allThemes: Map<string, Theme> = new Map();
 	public showDetailsInPicker: boolean = false;
+
+	public allThemes: Map<string, Theme> = new Map();
 
 	constructor() {
 		this.updateSettings();
@@ -14,6 +17,7 @@ export class SettingsManager {
 
 	public updateSettings(): void {
 		this.sortDarkThemesFirst = SettingsManager.getShowDarkThemesFirst();
+		this.sortCurrentThemeTypeFirst = SettingsManager.getShowCurrentThemeTypeFirst();
 		this.sortPinnedByRecentUsage = SettingsManager.getSortPinnedByRecentUsage();
 		this.previouslyPinnedThemes = SettingsManager.getPinnedThemes();
 		this.allThemes = SettingsManager.getAllThemes();
@@ -56,6 +60,15 @@ export class SettingsManager {
 			.get("favouriteThemes.darkThemesFirst", true);
 	}
 
+	static getShowCurrentThemeTypeFirst(): boolean {
+		const settingKey = "favouriteThemes.showThemesOfCurrentTypeFirst";
+		const defaultValue: boolean = workspace
+			.getConfiguration()
+			.inspect(settingKey)!.defaultValue as boolean;
+
+		return workspace.getConfiguration().get(settingKey, defaultValue);
+	}
+
 	public static getSortPinnedByRecentUsage(): boolean {
 		return workspace
 			.getConfiguration()
@@ -75,6 +88,14 @@ export class SettingsManager {
 			.map(theme => allThemes.set(theme.label, theme));
 
 		return allThemes;
+	}
+
+	public static getCurrentTheme() {
+		const currentColourThemeId = workspace
+			.getConfiguration()
+			.get("workbench.colorTheme") as string;
+
+		return this.getAllThemes().get(currentColourThemeId);
 	}
 
 	private static getShowDetailsInPicker(): boolean {

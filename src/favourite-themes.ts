@@ -22,10 +22,28 @@ export async function prepareQuickPickThemeList(
 		}
 	);
 
-	if (!settings.sortPinnedByRecentUsage) {
+	const currentThemeType = SettingsManager.getCurrentTheme()?.uiTheme;
+
+	let sortDarkThemesFirst: boolean;
+
+	if (settings.sortCurrentThemeTypeFirst) {
+		if (currentThemeType === ThemeType.dark) {
+			sortDarkThemesFirst = true;
+		} else if (currentThemeType === ThemeType.light) {
+			sortDarkThemesFirst = false;
+		}
+
 		pinnedThemes = pinnedThemes.sort((a, b) =>
-			sortThemesByType(a, b, settings.sortDarkThemesFirst)
+			sortThemesByType(a, b, sortDarkThemesFirst)
 		);
+	} else {
+		sortDarkThemesFirst = settings.sortDarkThemesFirst;
+
+		if (!settings.sortPinnedByRecentUsage) {
+			pinnedThemes = pinnedThemes.sort((a, b) =>
+				sortThemesByType(a, b, sortDarkThemesFirst)
+			);
+		}
 	}
 
 	const nonPinnedThemes: QuickPickTheme[] = Array.from(
@@ -43,7 +61,7 @@ export async function prepareQuickPickThemeList(
 						: undefined
 				} as QuickPickTheme)
 		)
-		.sort((a, b) => sortThemesByType(a, b, settings.sortDarkThemesFirst));
+		.sort((a, b) => sortThemesByType(a, b, sortDarkThemesFirst));
 
 	return [...pinnedThemes, ...nonPinnedThemes];
 }
