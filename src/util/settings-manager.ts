@@ -1,4 +1,10 @@
-import { ConfigurationTarget, extensions, workspace } from "vscode";
+import {
+	ConfigurationTarget,
+	ExtensionContext,
+	extensions,
+	window,
+	workspace
+} from "vscode";
 import { Theme } from "../model/package-json";
 
 export class SettingsManager {
@@ -16,6 +22,8 @@ export class SettingsManager {
 	}
 
 	public updateSettings(): void {
+		// this.populateAllThemes();
+
 		this.sortDarkThemesFirst = SettingsManager.getShowDarkThemesFirst();
 		this.sortCurrentThemeTypeFirst = SettingsManager.getShowCurrentThemeTypeFirst();
 		this.sortPinnedByRecentUsage = SettingsManager.getSortPinnedByRecentUsage();
@@ -51,7 +59,12 @@ export class SettingsManager {
 	}
 
 	public static themeExists(theme: string): boolean {
-		return this.getAllThemes().has(theme);
+		return (
+			this.getAllThemes().has(theme) ||
+			Array.from(this.getAllThemes().values()).some(
+				t => t.id === theme || t.label === theme
+			)
+		);
 	}
 
 	public static getShowDarkThemesFirst(): boolean {
@@ -75,27 +88,45 @@ export class SettingsManager {
 			.get("favouriteThemes.sortPinnedByRecentUsage", false);
 	}
 
-	private static getAllThemes(): Map<string, Theme> {
-		const allThemes = new Map<string, Theme>();
-
-		extensions.all
+	private static getAllThemesFromExtensions(): Theme[] {
+		return extensions.all
 			.filter(
 				ext =>
 					ext.packageJSON.contributes &&
 					Object.keys(ext.packageJSON.contributes).includes("themes")
 			)
-			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[])
-			.map(theme => allThemes.set(theme.label, theme));
+			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[]);
+	}
+
+	public static getAllThemes(): Map<string, Theme> {
+		const allThemes = new Map<string, Theme>();
+
+		SettingsManager.getAllThemesFromExtensions().map(theme =>
+			allThemes.set(theme.label, theme)
+		);
 
 		return allThemes;
 	}
 
-	public static getCurrentTheme() {
+	public static getCurrentTheme(): Theme | undefined {
 		const currentColourThemeId = workspace
 			.getConfiguration()
 			.get("workbench.colorTheme") as string;
 
 		return this.getAllThemes().get(currentColourThemeId);
+	}
+
+	public populateAllThemes(context: ExtensionContext): Thenable<void> {
+		const allThemesFromExtensions = SettingsManager.getAllThemesFromExtensions();
+
+		const thenable = context.globalState.update(
+			"allThemes",
+			allThemesFromExtensions
+		);
+
+		// debugger;
+
+		return thenable;
 	}
 
 	private static getShowDetailsInPicker(): boolean {

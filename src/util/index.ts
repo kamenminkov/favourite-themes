@@ -1,5 +1,5 @@
 import type { ConfigurationChangeEvent } from "vscode";
-import { ThemeType } from "../model/package-json";
+import { Theme, ThemeType } from "../model/package-json";
 import { QuickPickTheme } from "../model/quick-pick-theme";
 
 export function uniq<T>(input: T[]): T[] {
@@ -22,8 +22,22 @@ export function sortThemesByType(
 	}
 }
 
-export function getThemeTypeLabel(themeType?: ThemeType): "Dark" | "Light" {
-	return themeType === ThemeType.dark ? "Dark" : "Light";
+export function getThemeTypeLabel(theme: Theme): "Dark" | "Light" {
+	// log
+
+	if (themeIsHighContrast(theme.uiTheme)) {
+		if (theme.label.match(/dark/im)) {
+			return "Dark";
+		} else if (theme.label.match(/light/im)) {
+			return "Light";
+		}
+	}
+
+	return theme.uiTheme === ThemeType.dark ? "Dark" : "Light";
+}
+
+function themeIsHighContrast(themeType?: ThemeType): boolean {
+	return themeType !== ThemeType.dark && themeType !== ThemeType.light;
 }
 
 export function affectsRelevantConfig(e: ConfigurationChangeEvent): boolean {

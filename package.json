@@ -18,6 +18,8 @@
 		"Other"
 	],
 	"activationEvents": [
+		"*",
+		"onStartupFinished",
 		"onCommand:favourite-themes.selectColourTheme"
 	],
 	"main": "./out/extension.js",

@@ -39,6 +39,7 @@ interface Contributes {
 }
 
 export interface Theme {
+	id?: string;
 	label: string;
 	uiTheme: ThemeType;
 	path: string;
@@ -46,7 +47,8 @@ export interface Theme {
 
 export enum ThemeType {
 	light = "vs",
-	dark = "vs-dark"
+	dark = "vs-dark",
+	hc = "hc-black"
 }
 
 interface Engines {

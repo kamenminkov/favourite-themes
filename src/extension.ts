@@ -15,13 +15,10 @@ import { SettingsManager } from "./util/settings-manager";
 const settings = new SettingsManager();
 
 export function activate(context: ExtensionContext) {
-	workspace.onDidChangeConfiguration((e: ConfigurationChangeEvent) => {
-		if (affectsRelevantConfig(e)) {
-			settings.updateSettings();
-		}
-	});
+	// debugger;
+	console.log("ext activate");
 
-	extensions.onDidChange(e => settings.updateSettings());
+	settings.populateAllThemes(context);
 
 	const disposable = commands.registerCommand(
 		"favourite-themes.selectColourTheme",
@@ -33,6 +30,32 @@ export function activate(context: ExtensionContext) {
 	);
 
 	context.subscriptions.push(disposable);
+
+	const workspaceConfChanged = workspace.onDidChangeConfiguration(
+		(e: ConfigurationChangeEvent) => {
+			if (affectsRelevantConfig(e)) {
+				console.info(
+					"Setting change affects relevant config, updating settings..."
+				);
+
+				// TODO: Investigate theme reverting when selecting a hc theme
+
+				settings.updateSettings();
+			}
+		}
+	);
+
+	const extensionsChanged = extensions.onDidChange(e =>
+		settings.updateSettings()
+	);
+
+	context.subscriptions.push(
+		workspaceConfChanged,
+		extensionsChanged,
+		disposable
+	);
 }
 
-export function deactivate() {}
+export function deactivate(context: ExtensionContext) {
+	// debugger;
+}

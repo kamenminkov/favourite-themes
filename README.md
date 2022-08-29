@@ -39,6 +39,7 @@ This extension contributes the following settings:
 - Highlight active theme when showing the picker
 - Add customizable display (i.e. how to show names in the picker)
 - Add extension icon
+- Add commands for previous/next theme
 
 ---
 

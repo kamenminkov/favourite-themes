@@ -1,5 +1,5 @@
 import { window } from "vscode";
-import { ThemeType } from "./model/package-json";
+import { Theme, ThemeType } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 import { getThemeTypeLabel, sortThemesByType } from "./util/index";
 import { SettingsManager } from "./util/settings-manager";
@@ -8,15 +8,18 @@ export async function prepareQuickPickThemeList(
 	settings: SettingsManager
 ): Promise<QuickPickTheme[]> {
 	let pinnedThemes: QuickPickTheme[] = settings.previouslyPinnedThemes.map(
-		theme => {
-			const themeType = settings.allThemes.get(theme)?.uiTheme as ThemeType;
+		themeLabel => {
+			const theme =
+				(settings.allThemes.get(themeLabel) as Theme) ||
+				Array.from(settings.allThemes.values()).find(t => t.id === themeLabel);
+			const themeType = theme.uiTheme;
 
 			return {
-				label: theme,
+				label: themeLabel,
 				type: themeType,
 				picked: true,
 				description: settings.showDetailsInPicker
-					? getThemeTypeLabel(themeType)
+					? getThemeTypeLabel(theme)
 					: undefined
 			};
 		}
@@ -53,11 +56,12 @@ export async function prepareQuickPickThemeList(
 		.map(
 			theme =>
 				({
+					id: theme.id,
 					label: theme.label,
 					type: theme.uiTheme,
 					picked: false,
 					description: settings.showDetailsInPicker
-						? getThemeTypeLabel(theme.uiTheme)
+						? getThemeTypeLabel(theme)
 						: undefined
 				} as QuickPickTheme)
 		)
@@ -76,37 +80,62 @@ export function showThemeQuickPick(
 		.showQuickPick(quickPickThemes, {
 			canPickMany: true,
 			matchOnDescription: true,
-			onDidSelectItem: (selectedTheme: { label: string }) => {
-				SettingsManager.setCurrentColourTheme(selectedTheme.label)
-					.then(r => {
-						console.log(`Theme set to ${selectedTheme.label}`);
-						console.log(r);
-					})
+
+			onDidSelectItem: (selectedTheme: { id?: string; label: string }) => {
+				const selTheme = Array.from(
+					SettingsManager.getAllThemes().values()
+				).find(
+					t =>
+						// TODO: Extract method
+						t.id === ((selectedTheme.id as unknown) as string) ||
+						t.label === ((selectedTheme.id as unknown) as string)
+				);
+
+				return SettingsManager.setCurrentColourTheme(
+					selectedTheme.id || selectedTheme.label
+				)
+					.then(
+						r => {
+							console.log(`Theme set to ${selectedTheme.label}`);
+							console.log(r);
+						},
+						onrejected => {
+							debugger;
+							console.error(onrejected);
+						}
+					)
 					.catch(e => {
+						debugger;
 						console.error(e);
 					});
 			}
 		})
-		.then(onFulfilled => {
-			if (onFulfilled) {
-				const currentTheme = SettingsManager.getCurrentColourTheme();
-				const currentThemeIsPinned = onFulfilled.some(
-					theme => theme.label === currentTheme
-				);
+		.then(
+			onFulfilled => {
+				if (onFulfilled) {
+					const currentTheme = SettingsManager.getCurrentColourTheme();
+					const currentThemeIsPinned = onFulfilled.some(
+						theme => theme.label === currentTheme
+					);
 
-				const pinnedThemesToStore: string[] =
-					settings.sortPinnedByRecentUsage && currentThemeIsPinned
-						? [
-								currentTheme as string,
-								...onFulfilled
-									.map(theme => theme.label)
-									.filter(theme => theme !== currentTheme)
-						  ]
-						: onFulfilled.map(theme => theme.label).sort();
+					const pinnedThemesToStore: string[] =
+						settings.sortPinnedByRecentUsage && currentThemeIsPinned
+							? [
+									currentTheme as string,
+									...onFulfilled
+										.map(theme => theme.label)
+										.filter(theme => theme !== currentTheme)
+							  ]
+							: onFulfilled.map(theme => theme.label).sort();
 
-				return SettingsManager.storePinnedThemes(pinnedThemesToStore);
-			} else {
+					return SettingsManager.storePinnedThemes(pinnedThemesToStore);
+				} else {
+				}
+			},
+			onRejected => {
+				debugger;
+				console.info("setting theme to previous one...");
 				return SettingsManager.setCurrentColourTheme(previousTheme);
 			}
-		});
+		);
 }
