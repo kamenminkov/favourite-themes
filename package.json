@@ -10,7 +10,7 @@
 	},
 	"displayName": "Favourite Themes",
 	"description": "",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -44,10 +44,22 @@
 			{
 				"title": "Favourite Themes",
 				"properties": {
-					"favouriteThemes.darkThemesFirst": {
-						"type": "boolean",
-						"default": true,
-						"description": "If set to `true`, dark themes will come before light ones - both in the pinned and in the non-pinned section."
+					"favouriteThemes.themeTypeSortOrder": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"pattern": "^vs-dark$|^hc-black$|^vs$|^hc-light$"
+						},
+						"uniqueItems": true,
+						"minItems": 4,
+						"maxItems": 4,
+						"default": [
+							"vs-dark",
+							"hc-black",
+							"vs",
+							"hc-light"
+						],
+						"description": "Sort order for pinned and non-pinned themes"
 					}
 				}
 			},
@@ -77,7 +89,7 @@
 					"favouriteThemes.showThemesOfCurrentTypeFirst": {
 						"type": "boolean",
 						"default": false,
-						"description": "If set to `true`, it will override `\"favouriteThemes.darkThemesFirst\"` and it will show at the top themes of the type of the theme that's currently used"
+						"description": "If set to `true`, it will override `\"favouriteThemes.themeTypeSortOrder\"` and it will show at the top themes of the type of the theme that's currently used"
 					}
 				}
 			}

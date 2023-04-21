@@ -38,18 +38,33 @@ interface Contributes {
 	themes: Theme[];
 }
 
-export interface Theme {
-	id?: string;
+export interface BaseTheme {
+	name: string;
 	label: string;
 	uiTheme: ThemeType;
 	path: string;
 }
 
+export interface BuiltInTheme extends BaseTheme {
+	id: string;
+}
+
+export interface ExternalTheme extends BaseTheme {}
+
+export type Theme = BuiltInTheme | ExternalTheme;
+
 export enum ThemeType {
 	light = "vs",
 	dark = "vs-dark",
-	hc = "hc-black"
+	hcBlack = "hc-black",
+	hcLight = "hc-light"
 }
+
+export type ThemeTypeLabel =
+	| "Dark"
+	| "Light"
+	| "High Contrast Dark"
+	| "High Contrast Light";
 
 interface Engines {
 	vscode: string;

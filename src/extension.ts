@@ -15,9 +15,6 @@ import { SettingsManager } from "./util/settings-manager";
 const settings = new SettingsManager();
 
 export function activate(context: ExtensionContext) {
-	// debugger;
-	console.log("ext activate");
-
 	settings.populateAllThemes(context);
 
 	const disposable = commands.registerCommand(
@@ -38,8 +35,6 @@ export function activate(context: ExtensionContext) {
 					"Setting change affects relevant config, updating settings..."
 				);
 
-				// TODO: Investigate theme reverting when selecting a hc theme
-
 				settings.updateSettings();
 			}
 		}
@@ -56,6 +51,4 @@ export function activate(context: ExtensionContext) {
 	);
 }
 
-export function deactivate(context: ExtensionContext) {
-	// debugger;
-}
+export function deactivate(context: ExtensionContext) {}

@@ -1,5 +1,5 @@
 import type { ConfigurationChangeEvent } from "vscode";
-import { Theme, ThemeType } from "../model/package-json";
+import { Theme, ThemeType, ThemeTypeLabel } from "../model/package-json";
 import { QuickPickTheme } from "../model/quick-pick-theme";
 
 export function uniq<T>(input: T[]): T[] {
@@ -9,31 +9,32 @@ export function uniq<T>(input: T[]): T[] {
 export function sortThemesByType(
 	a: QuickPickTheme,
 	b: QuickPickTheme,
-	darkThemesFirst: boolean = true
+	sortOrder: ThemeType[],
+	currentThemeType: ThemeType | null = null
 ): 0 | 1 | -1 {
-	if (a.type === b.type) {
+	currentThemeType && sortOrder.sort(a => (a === currentThemeType ? -1 : 0));
+
+	const indexA = sortOrder.findIndex(t => a.type === t);
+	const indexB = sortOrder.findIndex(t => b.type === t);
+
+	if (indexA === indexB) {
 		return 0;
 	} else {
-		if (a.type === ThemeType.dark && b.type === ThemeType.light) {
-			return darkThemesFirst ? -1 : 1;
-		} else {
-			return darkThemesFirst ? 1 : -1;
-		}
+		return indexA - indexB < 0 ? -1 : 1;
 	}
 }
 
-export function getThemeTypeLabel(theme: Theme): "Dark" | "Light" {
-	// log
-
-	if (themeIsHighContrast(theme.uiTheme)) {
-		if (theme.label.match(/dark/im)) {
+export function getThemeTypeLabel(theme: Theme): ThemeTypeLabel {
+	switch (theme.uiTheme) {
+		case ThemeType.dark:
 			return "Dark";
-		} else if (theme.label.match(/light/im)) {
+		case ThemeType.hcBlack:
+			return "High Contrast Dark";
+		case ThemeType.hcLight:
+			return "High Contrast Light";
+		case ThemeType.light:
 			return "Light";
-		}
 	}
-
-	return theme.uiTheme === ThemeType.dark ? "Dark" : "Light";
 }
 
 function themeIsHighContrast(themeType?: ThemeType): boolean {

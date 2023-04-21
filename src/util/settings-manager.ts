@@ -2,10 +2,16 @@ import {
 	ConfigurationTarget,
 	ExtensionContext,
 	extensions,
-	window,
 	workspace
 } from "vscode";
-import { Theme } from "../model/package-json";
+import {
+	BuiltInTheme,
+	ExternalTheme,
+	Theme,
+	ThemeType
+} from "../model/package-json";
+import { DEFAULT_SORT_ORDER } from "./constants";
+import { extensionIsTheme, getThemeName } from "./theme.util";
 
 export class SettingsManager {
 	public sortDarkThemesFirst: boolean = false;
@@ -21,7 +27,7 @@ export class SettingsManager {
 		this.updateSettings();
 	}
 
-	public updateSettings(): void {
+	public async updateSettings(): Promise<void> {
 		// this.populateAllThemes();
 
 		this.sortDarkThemesFirst = SettingsManager.getShowDarkThemesFirst();
@@ -31,7 +37,7 @@ export class SettingsManager {
 		this.allThemes = SettingsManager.getAllThemes();
 		this.showDetailsInPicker = SettingsManager.getShowDetailsInPicker();
 
-		SettingsManager.removeMissingThemes();
+		await SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
 
 	public static getCurrentColourTheme(): string | undefined {
@@ -42,15 +48,25 @@ export class SettingsManager {
 		return workspace.getConfiguration().get("favouriteThemes.pinnedThemes", []);
 	}
 
-	public static removeMissingThemes(): typeof SettingsManager {
+	public static getThemeTypeSortOrder(): ThemeType[] {
+		return workspace
+			.getConfiguration()
+			.get("favouriteThemes.themeTypeSortOrder", DEFAULT_SORT_ORDER);
+	}
+
+	public static async storePinnedAndRemoveMissingThemes(): Promise<
+		typeof SettingsManager
+	> {
 		const allThemes = this.getAllThemes();
 		const pinnedThemes = this.getPinnedThemes().filter(t => allThemes.has(t));
 
-		this.storePinnedThemes(pinnedThemes);
+		await this.storePinnedThemes(pinnedThemes);
 
 		const lastChosenTheme = this.getCurrentColourTheme();
 
-		if (lastChosenTheme && !this.themeExists(lastChosenTheme)) {
+		const themeExists = this.themeExists(lastChosenTheme as string);
+
+		if (lastChosenTheme && !themeExists) {
 			const firstFavouriteTheme = this.getPinnedThemes()[0];
 			this.setCurrentColourTheme(firstFavouriteTheme);
 		}
@@ -59,12 +75,7 @@ export class SettingsManager {
 	}
 
 	public static themeExists(theme: string): boolean {
-		return (
-			this.getAllThemes().has(theme) ||
-			Array.from(this.getAllThemes().values()).some(
-				t => t.id === theme || t.label === theme
-			)
-		);
+		return this.getAllThemes().has(theme);
 	}
 
 	public static getShowDarkThemesFirst(): boolean {
@@ -88,22 +99,28 @@ export class SettingsManager {
 			.get("favouriteThemes.sortPinnedByRecentUsage", false);
 	}
 
-	private static getAllThemesFromExtensions(): Theme[] {
+	private static getAllBuiltInAndExternalThemes():
+		| BuiltInTheme[]
+		| ExternalTheme[] {
 		return extensions.all
-			.filter(
-				ext =>
-					ext.packageJSON.contributes &&
-					Object.keys(ext.packageJSON.contributes).includes("themes")
-			)
+			.filter(ext => extensionIsTheme(ext))
 			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[]);
 	}
 
-	public static getAllThemes(): Map<string, Theme> {
-		const allThemes = new Map<string, Theme>();
+	static isBuiltInTheme(theme: Theme): boolean {
+		return Object.keys(theme).includes("id");
+	}
 
-		SettingsManager.getAllThemesFromExtensions().map(theme =>
-			allThemes.set(theme.label, theme)
+	public static getAllThemes(): Map<string, BuiltInTheme | ExternalTheme> {
+		const allThemes = new Map<string, BuiltInTheme | ExternalTheme>();
+		const allThemesFromExtensions = SettingsManager.getAllBuiltInAndExternalThemes().map(
+			(theme: Theme) => ({
+				...theme,
+				name: getThemeName(theme)
+			})
 		);
+
+		allThemesFromExtensions.map(theme => allThemes.set(theme.name, theme));
 
 		return allThemes;
 	}
@@ -117,14 +134,12 @@ export class SettingsManager {
 	}
 
 	public populateAllThemes(context: ExtensionContext): Thenable<void> {
-		const allThemesFromExtensions = SettingsManager.getAllThemesFromExtensions();
+		const allThemesFromExtensions = SettingsManager.getAllBuiltInAndExternalThemes();
 
 		const thenable = context.globalState.update(
 			"allThemes",
 			allThemesFromExtensions
 		);
-
-		// debugger;
 
 		return thenable;
 	}
