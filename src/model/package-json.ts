@@ -39,7 +39,7 @@ interface Contributes {
 }
 
 export interface BaseTheme {
-	name: string;
+	name: string; // doesn't exist originally; added to normalise id and label
 	label: string;
 	uiTheme: ThemeType;
 	path: string;

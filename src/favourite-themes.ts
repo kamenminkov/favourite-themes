@@ -23,8 +23,8 @@ export async function prepareQuickPickThemeList(
 		}
 	);
 
-	const currentThemeType = SettingsManager.getCurrentTheme()!.uiTheme;
-	const themeTypeSortOrder = SettingsManager.getThemeTypeSortOrder();
+	const currentThemeType = settings.currentTheme!.uiTheme;
+	const themeTypeSortOrder = settings.themeTypeSortOrder;
 
 	if (settings.sortCurrentThemeTypeFirst) {
 		pinnedThemes = pinnedThemes.sort((a, b) =>
@@ -63,7 +63,7 @@ export function showThemeQuickPick(
 	quickPickThemes: QuickPickTheme[],
 	settings: SettingsManager
 ): Thenable<void> {
-	const previousTheme = SettingsManager.getCurrentColourTheme() as string;
+	const previousTheme = settings.currentTheme!.name;
 
 	return window
 		.showQuickPick(quickPickThemes, {

@@ -92,6 +92,17 @@
 						"description": "If set to `true`, it will override `\"favouriteThemes.themeTypeSortOrder\"` and it will show at the top themes of the type of the theme that's currently used"
 					}
 				}
+			},
+			{
+				"title": "Favourite Themes",
+				"properties": {
+					"favouriteThemes.darkThemesFirst": {
+						"type": "boolean",
+						"default": true,
+						"description": "If set to `true`, dark themes will come before light ones - both in the pinned and in the non-pinned section.",
+						"deprecationMessage": "No longer supported. Use `favouriteThemes.themeTypeSortOrder` instead."
+					}
+				}
 			}
 		]
 	},

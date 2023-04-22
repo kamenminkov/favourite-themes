@@ -14,7 +14,6 @@ import { DEFAULT_SORT_ORDER } from "./constants";
 import { extensionIsTheme, getThemeName } from "./theme.util";
 
 export class SettingsManager {
-	public sortDarkThemesFirst: boolean = false;
 	public sortCurrentThemeTypeFirst: boolean = false;
 
 	public sortPinnedByRecentUsage: boolean = false;
@@ -22,6 +21,8 @@ export class SettingsManager {
 	public showDetailsInPicker: boolean = false;
 
 	public allThemes: Map<string, Theme> = new Map();
+	public currentTheme: Theme | undefined;
+	public themeTypeSortOrder: ThemeType[] = DEFAULT_SORT_ORDER;
 
 	constructor() {
 		this.updateSettings();
@@ -30,12 +31,13 @@ export class SettingsManager {
 	public async updateSettings(): Promise<void> {
 		// this.populateAllThemes();
 
-		this.sortDarkThemesFirst = SettingsManager.getShowDarkThemesFirst();
 		this.sortCurrentThemeTypeFirst = SettingsManager.getShowCurrentThemeTypeFirst();
 		this.sortPinnedByRecentUsage = SettingsManager.getSortPinnedByRecentUsage();
 		this.previouslyPinnedThemes = SettingsManager.getPinnedThemes();
 		this.allThemes = SettingsManager.getAllThemes();
 		this.showDetailsInPicker = SettingsManager.getShowDetailsInPicker();
+		this.currentTheme = SettingsManager.getCurrentTheme() as Theme;
+		this.themeTypeSortOrder = SettingsManager.getThemeTypeSortOrder();
 
 		await SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
@@ -125,12 +127,12 @@ export class SettingsManager {
 		return allThemes;
 	}
 
-	public static getCurrentTheme(): Theme | undefined {
+	public static getCurrentTheme(): Theme {
 		const currentColourThemeId = workspace
 			.getConfiguration()
 			.get("workbench.colorTheme") as string;
 
-		return this.getAllThemes().get(currentColourThemeId);
+		return this.getAllThemes().get(currentColourThemeId) as Theme;
 	}
 
 	public populateAllThemes(context: ExtensionContext): Thenable<void> {

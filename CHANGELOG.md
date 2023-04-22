@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.5.0
+
+### Fixed
+
+- Handling of built-in default themes (including high contrast ones)
+
+### Added
+
+- Setting for custom order of theme types (`favouriteThemes.themeTypeSortOrder`) allowing you to specify dark, light, high contrast dark and high contrast light themes instead of just dark/light like previously
+
+### Deprecated
+
+- The `favouriteThemes.darkThemesFirst` setting. You should now use `favouriteThemes.themeTypeSortOrder` that covers the same functionality.
+
 ## 1.3.0
 
 ### Added
