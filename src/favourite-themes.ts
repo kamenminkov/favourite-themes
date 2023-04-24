@@ -65,19 +65,27 @@ export function showThemeQuickPick(
 ): Thenable<void> {
 	const previousTheme = settings.currentTheme!.name;
 
+	let timeout: NodeJS.Timeout | null = null;
+
 	return window
 		.showQuickPick(quickPickThemes, {
 			canPickMany: true,
 			matchOnDescription: true,
 
 			onDidSelectItem: (selectedTheme: Theme) => {
-				SettingsManager.setCurrentColourTheme(selectedTheme.name)
-					.then(r => {
-						console.log(`Theme set to ${selectedTheme.label}`);
-					})
-					.catch(e => {
-						console.error(e);
-					});
+				if (timeout) {
+					clearTimeout(timeout);
+				}
+
+				timeout = setTimeout(() => {
+					SettingsManager.setCurrentColourTheme(selectedTheme.name)
+						.then(r => {
+							console.log(`Theme set to ${selectedTheme.label}`);
+						})
+						.catch(e => {
+							console.error(e);
+						});
+				}, settings.themeSelectionDelay);
 			}
 		})
 		.then(

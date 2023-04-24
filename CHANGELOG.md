@@ -1,18 +1,24 @@
 # Change Log
 
+## 1.6.0
+
+### Added
+
+- Delay when quickly switching themes in the picker to prevent lag when quickly going through a lot of themes. Configurable by `favouriteThemes.themeSelectionDelay`.
+
 ## 1.5.0
 
 ### Fixed
 
-- Handling of built-in default themes (including high contrast ones)
+- Handling of built-in default themes (including high contrast ones).
 
 ### Added
 
-- Setting for custom order of theme types (`favouriteThemes.themeTypeSortOrder`) allowing you to specify dark, light, high contrast dark and high contrast light themes instead of just dark/light like previously
+- Setting for custom order of theme types (`favouriteThemes.themeTypeSortOrder`) allowing you to specify dark, light, high contrast dark and high contrast light themes instead of just dark/light like previously.
 
 ### Deprecated
 
-- The `favouriteThemes.darkThemesFirst` setting. You should now use `favouriteThemes.themeTypeSortOrder` that covers the same functionality.
+- The `favouriteThemes.darkThemesFirst` setting. You should now use the aforementioned `favouriteThemes.themeTypeSortOrder` that covers the same functionality.
 
 ## 1.3.0
 

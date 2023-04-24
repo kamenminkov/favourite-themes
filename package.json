@@ -10,7 +10,7 @@
 	},
 	"displayName": "Favourite Themes",
 	"description": "",
-	"version": "1.5.0",
+	"version": "1.6.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -22,7 +22,7 @@
 		"onStartupFinished",
 		"onCommand:favourite-themes.selectColourTheme"
 	],
-	"main": "./out/extension.js",
+	"main": "./out/src/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -101,6 +101,16 @@
 						"default": true,
 						"description": "If set to `true`, dark themes will come before light ones - both in the pinned and in the non-pinned section.",
 						"deprecationMessage": "No longer supported. Use `favouriteThemes.themeTypeSortOrder` instead."
+					}
+				}
+			},
+			{
+				"title": "Favourite Themes",
+				"properties": {
+					"favouriteThemes.themeSelectionDelay": {
+						"type": "number",
+						"default": 200,
+						"description": "Delay (in milliseconds) between selecting a theme in the picker and actually applying it. Helps prevent lag when quickly going through themes."
 					}
 				}
 			}

@@ -10,7 +10,8 @@ import {
 	Theme,
 	ThemeType
 } from "../model/package-json";
-import { DEFAULT_SORT_ORDER } from "./constants";
+import { ConfigKey } from "../model/package-json.config";
+import { DEFAULT_SORT_ORDER, DEFAULT_THEME_SELECTION_DELAY } from "./constants";
 import { extensionIsTheme, getThemeName } from "./theme.util";
 
 export class SettingsManager {
@@ -23,6 +24,7 @@ export class SettingsManager {
 	public allThemes: Map<string, Theme> = new Map();
 	public currentTheme: Theme | undefined;
 	public themeTypeSortOrder: ThemeType[] = DEFAULT_SORT_ORDER;
+	public themeSelectionDelay: number = DEFAULT_THEME_SELECTION_DELAY;
 
 	constructor() {
 		this.updateSettings();
@@ -38,10 +40,12 @@ export class SettingsManager {
 		this.showDetailsInPicker = SettingsManager.getShowDetailsInPicker();
 		this.currentTheme = SettingsManager.getCurrentTheme() as Theme;
 		this.themeTypeSortOrder = SettingsManager.getThemeTypeSortOrder();
+		this.themeSelectionDelay = SettingsManager.getThemeSelectionDelay();
+
+		// TODO: Use ConfigKey for all settings instead of hardcoded strings
 
 		await SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
-
 	public static getCurrentColourTheme(): string | undefined {
 		return workspace.getConfiguration().get("workbench.colorTheme");
 	}
@@ -54,6 +58,12 @@ export class SettingsManager {
 		return workspace
 			.getConfiguration()
 			.get("favouriteThemes.themeTypeSortOrder", DEFAULT_SORT_ORDER);
+	}
+
+	static getThemeSelectionDelay(): number {
+		return workspace
+			.getConfiguration()
+			.get(ConfigKey.themeSelectionDelay, DEFAULT_THEME_SELECTION_DELAY);
 	}
 
 	public static async storePinnedAndRemoveMissingThemes(): Promise<
