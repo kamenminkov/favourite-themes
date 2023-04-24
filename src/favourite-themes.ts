@@ -66,6 +66,7 @@ export function showThemeQuickPick(
 	const previousTheme = settings.currentTheme!.name;
 
 	let timeout: NodeJS.Timeout | null = null;
+	let enqueuedTheme: Theme | null = null;
 
 	return window
 		.showQuickPick(quickPickThemes, {
@@ -75,7 +76,10 @@ export function showThemeQuickPick(
 			onDidSelectItem: (selectedTheme: Theme) => {
 				if (timeout) {
 					clearTimeout(timeout);
+					enqueuedTheme = null;
 				}
+
+				enqueuedTheme = selectedTheme;
 
 				timeout = setTimeout(() => {
 					SettingsManager.setCurrentColourTheme(selectedTheme.name)
@@ -89,7 +93,7 @@ export function showThemeQuickPick(
 			}
 		})
 		.then(
-			result => {
+			async result => {
 				if (result) {
 					const currentTheme = SettingsManager.getCurrentColourTheme();
 					const currentThemeIsPinned = result.some(
@@ -106,14 +110,26 @@ export function showThemeQuickPick(
 							  ]
 							: result.map(theme => theme.label).sort();
 
-					return SettingsManager.storePinnedThemes(pinnedThemesToStore);
+					if (timeout) {
+						clearTimeout(timeout);
+					}
+
+					if (enqueuedTheme) {
+						await SettingsManager.setCurrentColourTheme(enqueuedTheme.name);
+						enqueuedTheme = null;
+					}
+
+					await SettingsManager.storePinnedThemes(pinnedThemesToStore);
+				} else {
+					await SettingsManager.setCurrentColourTheme(previousTheme);
+					enqueuedTheme = null;
 				}
 			},
-			onRejected => {
+			async onRejected => {
 				console.error(onRejected);
 				console.info("setting theme to previous one...");
 
-				return SettingsManager.setCurrentColourTheme(previousTheme);
+				return await SettingsManager.setCurrentColourTheme(previousTheme);
 			}
 		);
 }

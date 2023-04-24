@@ -39,7 +39,7 @@ This extension contributes the following settings:
 - Track and show statistics of how much you use each theme
 - ~~Handle disabling/uninstalling of themes~~
 - Tie the extension logic to `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme`
-- Revert to previously selected theme if you dismiss the picker
+- ~~Revert to previously selected theme if you dismiss the picker~~
 - Have typing while the picker's open automatically focus the search field instead of having to navigate to it
 - Highlight active theme when showing the picker
 - ~~Debounce switching of themes when quickly scrolling through the list~~

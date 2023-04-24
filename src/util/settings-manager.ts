@@ -46,6 +46,7 @@ export class SettingsManager {
 
 		await SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
+
 	public static getCurrentColourTheme(): string | undefined {
 		return workspace.getConfiguration().get("workbench.colorTheme");
 	}

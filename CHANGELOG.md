@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.6.1
+
+### Added
+
+- Apply theme immediately when closing the picker, ignoring any delay set via `favouriteThemes.themeSelectionDelay`.
+- Switch back to previous theme on picker dismissal.
+
 ## 1.6.0
 
 ### Added
