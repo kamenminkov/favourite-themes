@@ -15,6 +15,7 @@ export async function prepareQuickPickThemeList(
 				label: theme.name,
 				type: theme.uiTheme,
 				name: theme.name,
+				uiTheme: theme.uiTheme,
 				picked: true,
 				description: settings.showDetailsInPicker
 					? getThemeTypeLabel(theme)
@@ -63,7 +64,7 @@ export function showThemeQuickPick(
 	quickPickThemes: QuickPickTheme[],
 	settings: SettingsManager
 ): Thenable<void> {
-	const previousTheme = settings.currentTheme!.name;
+	const previousTheme = settings.currentTheme as Theme;
 
 	let timeout: NodeJS.Timeout | null = null;
 	let enqueuedTheme: Theme | null = null;
@@ -74,6 +75,8 @@ export function showThemeQuickPick(
 			matchOnDescription: true,
 
 			onDidSelectItem: (selectedTheme: Theme) => {
+				console.log("onDidSelectItem");
+
 				if (timeout) {
 					clearTimeout(timeout);
 					enqueuedTheme = null;
@@ -82,7 +85,7 @@ export function showThemeQuickPick(
 				enqueuedTheme = selectedTheme;
 
 				timeout = setTimeout(() => {
-					SettingsManager.setCurrentColourTheme(selectedTheme.name)
+					SettingsManager.setCurrentColourTheme(selectedTheme)
 						.then(r => {
 							console.log(`Theme set to ${selectedTheme.label}`);
 						})
@@ -95,7 +98,7 @@ export function showThemeQuickPick(
 		.then(
 			async result => {
 				if (result) {
-					const currentTheme = SettingsManager.getCurrentColourTheme();
+					const currentTheme = SettingsManager.getCurrentColourThemeName();
 					const currentThemeIsPinned = result.some(
 						theme => theme.label === currentTheme
 					);
@@ -115,7 +118,7 @@ export function showThemeQuickPick(
 					}
 
 					if (enqueuedTheme) {
-						await SettingsManager.setCurrentColourTheme(enqueuedTheme.name);
+						await SettingsManager.setCurrentColourTheme(enqueuedTheme);
 						enqueuedTheme = null;
 					}
 

@@ -7,7 +7,8 @@ export enum ConfigKey {
 	showExtraQuickPickDetails = "favouriteThemes.showExtraQuickPickDetails",
 	showThemesOfCurrentTypeFirst = "favouriteThemes.showThemesOfCurrentTypeFirst",
 	darkThemesFirst = "favouriteThemes.darkThemesFirst",
-	themeSelectionDelay = "favouriteThemes.themeSelectionDelay"
+	themeSelectionDelay = "favouriteThemes.themeSelectionDelay",
+	updatePreferredThemes = "favouriteThemes.updatePreferredThemes"
 }
 
 export function getConfigDefaultFromPackageJson(key: ConfigKey) {

@@ -22,15 +22,16 @@ VSCode's built-in theme picker works perfectly if you have 5 or 10 themes instal
 
 This extension contributes the following settings:
 
-| Setting                                        |    Type    | Description                                                                                                                                               |                               Default value |
-| ---------------------------------------------- | :--------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------: |
-| `favouriteThemes.pinnedThemes`                 | `string[]` | An array containing all pinned themes.                                                                                                                    |                                        `[]` |
-| `favouriteThemes.darkThemesFirst`              | `boolean`  | (Deprecated, use `favouriteThemes.themeTypeSortOrder` instead) Whether dark themes should come first                                                      |                                      `true` |
-| `favouriteThemes.sortPinnedByRecentUsage`      | `boolean`  | Whether to show themes in order of their usage (i.e. most recently used ones on top)                                                                      |                                     `false` |
-| `favouriteThemes.showExtraQuickPickDetails`    | `boolean`  | Whether to show dark/light theme type inline in the picker                                                                                                |                                     `false` |
-| `favouriteThemes.themeTypeSortOrder`           | `string[]` | How to order themes by type (dark, light, high contrast dark, high contrast light)                                                                        | `["vs-dark", "hc-black", "vs", "hc-light"]` |
-| `favouriteThemes.showThemesOfCurrentTypeFirst` | `boolean`  | If set to `true`, it will override `favouriteThemes.themeTypeSortOrder` and it will show at the top themes of the type of the theme that's currently used |                                     `false` |
-| `favouriteThemes.themeSelectionDelay`          |  `number`  | Delay (in milliseconds) between selecting a theme in the picker and actually applying it. Helps prevent lag when quickly going through themes.            |                                       `200` |
+| Setting                                        |    Type    | Description                                                                                                                                                |                               Default value |
+| ---------------------------------------------- | :--------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------: |
+| `favouriteThemes.pinnedThemes`                 | `string[]` | An array containing all pinned themes.                                                                                                                     |                                        `[]` |
+| `favouriteThemes.darkThemesFirst`              | `boolean`  | (Deprecated, use `favouriteThemes.themeTypeSortOrder` instead) Whether dark themes should come first                                                       |                                      `true` |
+| `favouriteThemes.sortPinnedByRecentUsage`      | `boolean`  | Whether to show themes in order of their usage (i.e. most recently used ones on top)                                                                       |                                     `false` |
+| `favouriteThemes.showExtraQuickPickDetails`    | `boolean`  | Whether to show dark/light theme type inline in the picker                                                                                                 |                                     `false` |
+| `favouriteThemes.themeTypeSortOrder`           | `string[]` | How to order themes by type (dark, light, high contrast dark, high contrast light)                                                                         | `["vs-dark", "hc-black", "vs", "hc-light"]` |
+| `favouriteThemes.showThemesOfCurrentTypeFirst` | `boolean`  | If set to `true`, it will override `favouriteThemes.themeTypeSortOrder` and it will show at the top themes of the type of the theme that's currently used. |                                     `false` |
+| `favouriteThemes.themeSelectionDelay`          |  `number`  | Delay (in milliseconds) between selecting a theme in the picker and actually applying it. Helps prevent lag when quickly going through themes.             |                                       `200` |
+| `favouriteThemes.updatePreferredThemes`        | `boolean`  | Update `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme` when selecting themes through this extension.                          |                                       false |
 
 <!-- ## Known Issues -->
 
@@ -38,7 +39,7 @@ This extension contributes the following settings:
 
 - Track and show statistics of how much you use each theme
 - ~~Handle disabling/uninstalling of themes~~
-- Tie the extension logic to `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme`
+- ~~Tie the extension logic to `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme`~~
 - ~~Revert to previously selected theme if you dismiss the picker~~
 - Have typing while the picker's open automatically focus the search field instead of having to navigate to it
 - Highlight active theme when showing the picker

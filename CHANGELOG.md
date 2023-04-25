@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.7.0
+
+### Added
+
+- An option to update `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme` when selecting themes through the extension's picker - set `favouriteThemes.updatePreferredThemes` to `true` to activate.
+
 ## 1.6.1
 
 ### Added

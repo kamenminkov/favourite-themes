@@ -15,7 +15,9 @@ import { SettingsManager } from "./util/settings-manager";
 const settings = new SettingsManager();
 
 export function activate(context: ExtensionContext) {
-	settings.populateAllThemes(context);
+	SettingsManager.setContext(context);
+
+	settings.populateAllThemes();
 
 	const disposable = commands.registerCommand(
 		"favourite-themes.selectColourTheme",

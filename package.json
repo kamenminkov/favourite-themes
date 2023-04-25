@@ -10,7 +10,7 @@
 	},
 	"displayName": "Favourite Themes",
 	"description": "",
-	"version": "1.6.1",
+	"version": "1.7.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -111,6 +111,16 @@
 						"type": "number",
 						"default": 200,
 						"description": "Delay (in milliseconds) between selecting a theme in the picker and actually applying it. Helps prevent lag when quickly going through themes."
+					}
+				}
+			},
+			{
+				"title": "Favourite Themes",
+				"properties": {
+					"favouriteThemes.updatePreferredThemes": {
+						"type": "boolean",
+						"default": false,
+						"description": "Update `workbench.preferredDarkColorTheme` and `workbench.preferredLightColorTheme` when selecting themes through this extension."
 					}
 				}
 			}

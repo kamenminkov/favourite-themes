@@ -11,7 +11,13 @@ import {
 	ThemeType
 } from "../model/package-json";
 import { ConfigKey } from "../model/package-json.config";
-import { DEFAULT_SORT_ORDER, DEFAULT_THEME_SELECTION_DELAY } from "./constants";
+import { GlobalContextKeys, RelatedConfigKey } from "./config";
+import {
+	DEFAULT_SHOW_THEMES_OF_CURRENT_TYPE_FIRST,
+	DEFAULT_SORT_ORDER,
+	DEFAULT_THEME_SELECTION_DELAY,
+	DEFAULT_UPDATE_PREFERRED_THEMES
+} from "./constants";
 import { extensionIsTheme, getThemeName } from "./theme.util";
 
 export class SettingsManager {
@@ -25,6 +31,9 @@ export class SettingsManager {
 	public currentTheme: Theme | undefined;
 	public themeTypeSortOrder: ThemeType[] = DEFAULT_SORT_ORDER;
 	public themeSelectionDelay: number = DEFAULT_THEME_SELECTION_DELAY;
+	public updatePreferredThemes: boolean = DEFAULT_UPDATE_PREFERRED_THEMES;
+
+	private static context: ExtensionContext;
 
 	constructor() {
 		this.updateSettings();
@@ -41,75 +50,120 @@ export class SettingsManager {
 		this.currentTheme = SettingsManager.getCurrentTheme() as Theme;
 		this.themeTypeSortOrder = SettingsManager.getThemeTypeSortOrder();
 		this.themeSelectionDelay = SettingsManager.getThemeSelectionDelay();
-
-		// TODO: Use ConfigKey for all settings instead of hardcoded strings
+		this.updatePreferredThemes = SettingsManager.getUpdatePreferredThemes();
 
 		await SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
 
-	public static getCurrentColourTheme(): string | undefined {
-		return workspace.getConfiguration().get("workbench.colorTheme");
+	public populateAllThemes(): Thenable<void> {
+		const allThemesFromExtensions = SettingsManager.getAllThemes();
+
+		const thenable = SettingsManager.context.globalState.update(
+			GlobalContextKeys.allThemes,
+			allThemesFromExtensions
+		);
+
+		return thenable;
 	}
 
-	public static getPinnedThemes(): string[] {
-		return workspace.getConfiguration().get("favouriteThemes.pinnedThemes", []);
-	}
-
-	public static getThemeTypeSortOrder(): ThemeType[] {
-		return workspace
-			.getConfiguration()
-			.get("favouriteThemes.themeTypeSortOrder", DEFAULT_SORT_ORDER);
-	}
-
-	static getThemeSelectionDelay(): number {
-		return workspace
-			.getConfiguration()
-			.get(ConfigKey.themeSelectionDelay, DEFAULT_THEME_SELECTION_DELAY);
+	public static setContext(context: ExtensionContext): void {
+		SettingsManager.context = context;
 	}
 
 	public static async storePinnedAndRemoveMissingThemes(): Promise<
 		typeof SettingsManager
 	> {
-		const allThemes = this.getAllThemes();
+		const allThemes = this.getAllThemesFromContext();
 		const pinnedThemes = this.getPinnedThemes().filter(t => allThemes.has(t));
 
 		await this.storePinnedThemes(pinnedThemes);
 
-		const lastChosenTheme = this.getCurrentColourTheme();
+		const lastChosenTheme = this.getCurrentColourThemeName();
 
 		const themeExists = this.themeExists(lastChosenTheme as string);
 
 		if (lastChosenTheme && !themeExists) {
-			const firstFavouriteTheme = this.getPinnedThemes()[0];
-			this.setCurrentColourTheme(firstFavouriteTheme);
+			const firstFavouriteThemeName = this.getPinnedThemes()[0];
+			const firstFavouriteTheme = allThemes.get(firstFavouriteThemeName);
+			this.setCurrentColourTheme(firstFavouriteTheme as Theme);
 		}
 
 		return this;
 	}
 
-	public static themeExists(theme: string): boolean {
-		return this.getAllThemes().has(theme);
-	}
-
-	public static getShowDarkThemesFirst(): boolean {
+	public static getCurrentColourThemeName(): string | undefined {
 		return workspace
 			.getConfiguration()
-			.get("favouriteThemes.darkThemesFirst", true);
+			.get(RelatedConfigKey.currentColourTheme);
 	}
 
-	static getShowCurrentThemeTypeFirst(): boolean {
-		const settingKey = "favouriteThemes.showThemesOfCurrentTypeFirst";
-		const defaultValue: boolean = workspace
-			.getConfiguration()
-			.inspect(settingKey)!.defaultValue as boolean;
+	public static async setCurrentColourTheme(theme: Theme): Promise<void> {
+		if (this.getUpdatePreferredThemes()) {
+			switch (theme.uiTheme) {
+				case ThemeType.dark:
+				case ThemeType.hcBlack:
+					await this.updateGlobalSetting(
+						RelatedConfigKey.preferredDarkColourTheme,
+						theme.name
+					);
+					break;
+				case ThemeType.light:
+				case ThemeType.hcLight:
+					await this.updateGlobalSetting(
+						RelatedConfigKey.preferredLightColourTheme,
+						theme.name
+					);
+					break;
+			}
+		}
 
-		return workspace.getConfiguration().get(settingKey, defaultValue);
+		return await this.updateGlobalSetting(
+			RelatedConfigKey.currentColourTheme,
+			theme.name
+		);
 	}
 
-	public static getSortPinnedByRecentUsage(): boolean {
+	public static async storePinnedThemes(themes: string[]): Promise<void> {
+		return this.updateGlobalSetting(ConfigKey.pinnedThemes, themes);
+	}
+
+	private static getPinnedThemes(): string[] {
+		return workspace.getConfiguration().get(ConfigKey.pinnedThemes, []);
+	}
+
+	private static getThemeTypeSortOrder(): ThemeType[] {
 		return workspace
 			.getConfiguration()
-			.get("favouriteThemes.sortPinnedByRecentUsage", false);
+			.get(ConfigKey.themeTypeSortOrder, DEFAULT_SORT_ORDER);
+	}
+
+	private static getThemeSelectionDelay(): number {
+		return workspace
+			.getConfiguration()
+			.get(ConfigKey.themeSelectionDelay, DEFAULT_THEME_SELECTION_DELAY);
+	}
+
+	private static themeExists(theme: string): boolean {
+		return this.getAllThemesFromContext().has(theme);
+	}
+
+	private static getShowDarkThemesFirst(): boolean {
+		return workspace.getConfiguration().get(ConfigKey.darkThemesFirst, true);
+	}
+
+	private static getShowCurrentThemeTypeFirst(): boolean {
+		return workspace
+			.getConfiguration()
+			.get(
+				ConfigKey.showThemesOfCurrentTypeFirst,
+				DEFAULT_SHOW_THEMES_OF_CURRENT_TYPE_FIRST
+			);
+	}
+
+	private static getSortPinnedByRecentUsage(): boolean {
+		return workspace
+			.getConfiguration()
+			.get(ConfigKey.sortPinnedByRecentUsage, false);
 	}
 
 	private static getAllBuiltInAndExternalThemes():
@@ -120,11 +174,16 @@ export class SettingsManager {
 			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[]);
 	}
 
-	static isBuiltInTheme(theme: Theme): boolean {
-		return Object.keys(theme).includes("id");
+	private static getAllThemesFromContext(
+		context: ExtensionContext = SettingsManager.context
+	): Map<string, BuiltInTheme | ExternalTheme> {
+		return context.globalState.get(GlobalContextKeys.allThemes) as Map<
+			string,
+			BuiltInTheme | ExternalTheme
+		>;
 	}
 
-	public static getAllThemes(): Map<string, BuiltInTheme | ExternalTheme> {
+	private static getAllThemes(): Map<string, BuiltInTheme | ExternalTheme> {
 		const allThemes = new Map<string, BuiltInTheme | ExternalTheme>();
 		const allThemesFromExtensions = SettingsManager.getAllBuiltInAndExternalThemes().map(
 			(theme: Theme) => ({
@@ -138,44 +197,32 @@ export class SettingsManager {
 		return allThemes;
 	}
 
-	public static getCurrentTheme(): Theme {
+	private static getCurrentTheme(): Theme {
 		const currentColourThemeId = workspace
 			.getConfiguration()
-			.get("workbench.colorTheme") as string;
+			.get(RelatedConfigKey.currentColourTheme) as string;
 
 		return this.getAllThemes().get(currentColourThemeId) as Theme;
-	}
-
-	public populateAllThemes(context: ExtensionContext): Thenable<void> {
-		const allThemesFromExtensions = SettingsManager.getAllBuiltInAndExternalThemes();
-
-		const thenable = context.globalState.update(
-			"allThemes",
-			allThemesFromExtensions
-		);
-
-		return thenable;
 	}
 
 	private static getShowDetailsInPicker(): boolean {
 		return workspace
 			.getConfiguration()
-			.get("favouriteThemes.showExtraQuickPickDetails", false);
+			.get(ConfigKey.showExtraQuickPickDetails, false);
 	}
 
-	public static async setCurrentColourTheme(theme: string): Promise<void> {
-		return await workspace
+	private static getUpdatePreferredThemes(): boolean {
+		return workspace
 			.getConfiguration()
-			.update("workbench.colorTheme", theme, ConfigurationTarget.Global);
+			.get(ConfigKey.updatePreferredThemes, DEFAULT_UPDATE_PREFERRED_THEMES);
 	}
 
-	public static async storePinnedThemes(themes: string[]): Promise<void> {
+	private static async updateGlobalSetting(
+		sectionKey: string,
+		value: any
+	): Promise<void> {
 		return await workspace
 			.getConfiguration()
-			.update(
-				"favouriteThemes.pinnedThemes",
-				themes,
-				ConfigurationTarget.Global
-			);
+			.update(sectionKey, value, ConfigurationTarget.Global);
 	}
 }
