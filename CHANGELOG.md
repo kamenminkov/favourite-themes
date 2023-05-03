@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.8.0
+
+### Added
+
+- Commands to go to previous/next theme
+
 ## 1.7.0
 
 ### Added

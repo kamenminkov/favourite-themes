@@ -1,4 +1,4 @@
-import { window } from "vscode";
+import { ExtensionContext, window } from "vscode";
 import { Theme } from "./model/package-json";
 import { QuickPickTheme } from "./model/quick-pick-theme";
 import { getThemeTypeLabel, sortThemesByType } from "./util/index";
@@ -75,8 +75,6 @@ export function showThemeQuickPick(
 			matchOnDescription: true,
 
 			onDidSelectItem: (selectedTheme: Theme) => {
-				console.log("onDidSelectItem");
-
 				if (timeout) {
 					clearTimeout(timeout);
 					enqueuedTheme = null;
@@ -98,7 +96,8 @@ export function showThemeQuickPick(
 		.then(
 			async result => {
 				if (result) {
-					const currentTheme = SettingsManager.getCurrentColourThemeName();
+					const currentTheme =
+						enqueuedTheme?.name || SettingsManager.getCurrentColourThemeName();
 					const currentThemeIsPinned = result.some(
 						theme => theme.label === currentTheme
 					);
@@ -135,4 +134,48 @@ export function showThemeQuickPick(
 				return await SettingsManager.setCurrentColourTheme(previousTheme);
 			}
 		);
+}
+
+export function switchTheme(
+	direction: "prev" | "next",
+	limitToCurrentThemeType: boolean = true
+): void {
+	// TODO: Consider tying limitToCurrentThemeType to a setting
+
+	const allThemes = SettingsManager.getAllThemesFromContext();
+
+	const currentTheme = SettingsManager.getCurrentColourThemeName();
+	const currentThemeType = allThemes.get(currentTheme as string)!.uiTheme;
+	const pinnedThemes = limitToCurrentThemeType
+		? SettingsManager.getPinnedThemes().filter(
+				theme => allThemes.get(theme)!.uiTheme === currentThemeType
+		  )
+		: SettingsManager.getPinnedThemes();
+
+	const currentThemeIndex = pinnedThemes.findLastIndex(t => t === currentTheme);
+
+	let themeToApplyIndex: number;
+
+	switch (direction) {
+		case "prev":
+			themeToApplyIndex =
+				currentThemeIndex === 0
+					? pinnedThemes.length - 1
+					: currentThemeIndex - 1;
+			break;
+
+		case "next":
+			themeToApplyIndex =
+				currentThemeIndex === pinnedThemes.length - 1
+					? 0
+					: currentThemeIndex + 1;
+			break;
+	}
+
+	const themeName = pinnedThemes[themeToApplyIndex];
+	const themeToApply = SettingsManager.getAllThemesFromContext().get(
+		themeName
+	) as Theme;
+
+	SettingsManager.setCurrentColourTheme(themeToApply);
 }

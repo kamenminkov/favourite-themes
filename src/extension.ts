@@ -7,25 +7,37 @@ import {
 } from "vscode";
 import {
 	prepareQuickPickThemeList,
-	showThemeQuickPick
+	showThemeQuickPick,
+	switchTheme
 } from "./favourite-themes";
+import { ExposedCommands } from "./model/commands";
 import { affectsRelevantConfig } from "./util";
 import { SettingsManager } from "./util/settings-manager";
 
-const settings = new SettingsManager();
+export const settings = new SettingsManager();
 
 export function activate(context: ExtensionContext) {
-	SettingsManager.setContext(context);
-
+	settings.setContext(context);
 	settings.populateAllThemes();
+	settings.updateSettings(context);
 
 	const disposable = commands.registerCommand(
-		"favourite-themes.selectColourTheme",
+		ExposedCommands.selectColourTheme,
 		() => {
 			prepareQuickPickThemeList(settings).then(quickPickThemes =>
 				showThemeQuickPick(quickPickThemes, settings)
 			);
 		}
+	);
+
+	const nextTheme = commands.registerCommand(
+		ExposedCommands.nextFavouriteTheme,
+		() => switchTheme("next")
+	);
+
+	const prevTheme = commands.registerCommand(
+		ExposedCommands.prevFavouriteTheme,
+		() => switchTheme("prev")
 	);
 
 	context.subscriptions.push(disposable);
@@ -37,19 +49,22 @@ export function activate(context: ExtensionContext) {
 					"Setting change affects relevant config, updating settings..."
 				);
 
-				settings.updateSettings();
+				settings.updateSettings(context);
 			}
 		}
 	);
 
-	const extensionsChanged = extensions.onDidChange(e =>
-		settings.updateSettings()
+	const extensionsChanged = extensions.onDidChange(
+		e => settings.updateSettings()
+		//                ^?
 	);
 
 	context.subscriptions.push(
 		workspaceConfChanged,
 		extensionsChanged,
-		disposable
+		disposable,
+		prevTheme,
+		nextTheme
 	);
 }
 

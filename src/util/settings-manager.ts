@@ -24,22 +24,26 @@ export class SettingsManager {
 	public sortCurrentThemeTypeFirst: boolean = false;
 
 	public sortPinnedByRecentUsage: boolean = false;
+
 	public previouslyPinnedThemes: string[] = [];
 	public showDetailsInPicker: boolean = false;
-
 	public allThemes: Map<string, Theme> = new Map();
+
 	public currentTheme: Theme | undefined;
 	public themeTypeSortOrder: ThemeType[] = DEFAULT_SORT_ORDER;
 	public themeSelectionDelay: number = DEFAULT_THEME_SELECTION_DELAY;
 	public updatePreferredThemes: boolean = DEFAULT_UPDATE_PREFERRED_THEMES;
-
 	private static context: ExtensionContext;
 
 	constructor() {
-		this.updateSettings();
+		// this.updateSettings();
 	}
 
-	public async updateSettings(): Promise<void> {
+	public updateSettings(context?: ExtensionContext): void {
+		if (context) {
+			this.setContext(context);
+		}
+
 		// this.populateAllThemes();
 
 		this.sortCurrentThemeTypeFirst = SettingsManager.getShowCurrentThemeTypeFirst();
@@ -52,7 +56,7 @@ export class SettingsManager {
 		this.themeSelectionDelay = SettingsManager.getThemeSelectionDelay();
 		this.updatePreferredThemes = SettingsManager.getUpdatePreferredThemes();
 
-		await SettingsManager.storePinnedAndRemoveMissingThemes();
+		SettingsManager.storePinnedAndRemoveMissingThemes();
 	}
 
 	public populateAllThemes(): Thenable<void> {
@@ -66,14 +70,16 @@ export class SettingsManager {
 		return thenable;
 	}
 
-	public static setContext(context: ExtensionContext): void {
+	public setContext(context: ExtensionContext): SettingsManager {
 		SettingsManager.context = context;
+
+		return this;
 	}
 
 	public static async storePinnedAndRemoveMissingThemes(): Promise<
 		typeof SettingsManager
 	> {
-		const allThemes = this.getAllThemesFromContext();
+		const allThemes = SettingsManager.getAllThemesFromContext();
 		const pinnedThemes = this.getPinnedThemes().filter(t => allThemes.has(t));
 
 		await this.storePinnedThemes(pinnedThemes);
@@ -127,7 +133,7 @@ export class SettingsManager {
 		return this.updateGlobalSetting(ConfigKey.pinnedThemes, themes);
 	}
 
-	private static getPinnedThemes(): string[] {
+	public static getPinnedThemes(): string[] {
 		return workspace.getConfiguration().get(ConfigKey.pinnedThemes, []);
 	}
 
@@ -174,10 +180,14 @@ export class SettingsManager {
 			.flatMap(ext => ext.packageJSON.contributes.themes as Theme[]);
 	}
 
-	private static getAllThemesFromContext(
-		context: ExtensionContext = SettingsManager.context
+	public static getAllThemesFromContext(
+		context: ExtensionContext | null = SettingsManager.context as ExtensionContext
 	): Map<string, BuiltInTheme | ExternalTheme> {
-		return context.globalState.get(GlobalContextKeys.allThemes) as Map<
+		if (!this.context) {
+			throw new Error("No context found");
+		}
+
+		return this.context.globalState.get(GlobalContextKeys.allThemes) as Map<
 			string,
 			BuiltInTheme | ExternalTheme
 		>;

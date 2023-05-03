@@ -47,6 +47,8 @@ This extension contributes the following settings:
 - Add customizable display (i.e. how to show names in the picker)
 - Add extension icon
 - Add commands for previous/next theme
+- Add visual preview of themes
+- Investigate a way to keep matching pinned themes at the top during a search
 
 ---
 

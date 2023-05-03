@@ -10,7 +10,7 @@
 	},
 	"displayName": "Favourite Themes",
 	"description": "",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -28,6 +28,14 @@
 			{
 				"command": "favourite-themes.selectColourTheme",
 				"title": "Pick Theme"
+			},
+			{
+				"command": "favourite-themes.prevFavouriteColourTheme",
+				"title": "Previous Favourite Theme"
+			},
+			{
+				"command": "favourite-themes.nextFavouriteColourTheme",
+				"title": "Next Favourite Theme"
 			}
 		],
 		"configuration": [
